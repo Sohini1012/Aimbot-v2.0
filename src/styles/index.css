@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   §5 DESIGN SYSTEM — values lifted from shaikluqman.vercel.app.
+   No colour may appear anywhere in the codebase that is not a token.
+   ------------------------------------------------------------------ */
+@theme {
+  /* surfaces */
+  --color-paper: #f6f5f2;
+  --color-noir: #101013;
+  --color-panel: #16161c;
+  --color-noir-soft: #2e2e33;
+
+  /* text */
+  --color-ink: #1b1b1e;
+  --color-muted: #52525b;
+  --color-dim: #6e6e76;
+
+  /* hairlines on paper */
+  --color-line: #e6e4dd;
+  --color-line-strong: #d9d6cd;
+  --color-warm: #e3dfd3;
+  --color-warm-deep: #c9c4b6;
+
+  /* the signature accent — amber */
+  --color-amber: #f5a623;
+  --color-amber-deep: #e29200;
+  --color-amber-alt: #e59005;
+  --color-amber-text: #b45309;
+  --color-amber-shade: #4a3a09;
+
+  /* greys for dark sections */
+  --color-grey-1: #c9c9d1;
+  --color-grey-2: #b3b3bc;
+  --color-grey-3: #a6a6af;
+
+  /* type */
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --font-hand: 'Caveat', ui-serif, cursive;
+
+  /* motion */
+  --ease-ui: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* radii */
+  --radius-chip: 4px;
+  --radius-card: 1rem;
+  --radius-card-lg: 1.5rem;
+  --radius-block: 2rem;
+
+  /* shadows — soft and warm, never harsh black */
+  --shadow-soft: 0 1px 2px #1010130d;
+  --shadow-lift: 0 8px 30px #1010131a;
+}
+
+/* amber overlay steps used on the portfolio */
+:root {
+  --amber-10: #f5a6231a;
+  --amber-15: #f5a62326;
+  --amber-20: #f5a62333;
+  --amber-30: #f5a6234d;
+  --amber-40: #f5a62366;
+  --amber-60: #f5a62399;
+  --amber-90: #f5a623e6;
+  --hairline-dark: rgba(255, 255, 255, 0.1);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Lenis owns the scroll; it sets these itself but we declare them so the
+   first paint does not flash a native-scrolled layout. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* §12 — visible amber focus rings everywhere, never removed */
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* the portfolio's radial "spot" behind dark blocks */
+.spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(60% 55% at 50% 0%, var(--amber-30), transparent 70%);
+  opacity: 0.1;
+}
+
+/* §5 / §12 — reduced motion collapses everything */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
