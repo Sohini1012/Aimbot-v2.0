@@ -1,29 +1,27 @@
 import { Suspense, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Perf } from 'r3f-perf'
-import type { Mesh } from 'three'
+import type { Group } from 'three'
 import { Lighting } from './Lighting'
 import { scrollState } from './scrollState'
+import { Blaster } from '@/models/Blaster'
 
-/** Milestone 5 placeholder: proves Lenis → ScrollTrigger → scrollState → render
- *  loop is wired end to end before any real geometry exists. Replaced by the
- *  Retaliator in milestone 6. */
-function ProofCube() {
-  const ref = useRef<Mesh>(null)
+/** Temporary rig: spins the assembled blaster off scroll so the silhouette can
+ *  be judged from every angle while it is being iterated on. Replaced by the
+ *  real camera rig and explode timeline in milestones 9-13. */
+function BlasterRig() {
+  const ref = useRef<Group>(null)
 
   useFrame(() => {
-    const m = ref.current
-    if (!m) return
-    m.rotation.y = scrollState.progress * Math.PI * 4
-    m.rotation.x = scrollState.progress * Math.PI
-    m.position.y = Math.sin(scrollState.progress * Math.PI) * 0.6
+    const g = ref.current
+    if (!g) return
+    g.rotation.y = -0.6 + scrollState.progress * Math.PI * 2
   })
 
   return (
-    <mesh ref={ref} castShadow>
-      <boxGeometry args={[1.4, 1.4, 1.4]} />
-      <meshPhysicalMaterial color="#f6f5f2" roughness={0.55} clearcoat={0.15} />
-    </mesh>
+    <group ref={ref} scale={0.78} position={[0, -0.1, 0]}>
+      <Blaster />
+    </group>
   )
 }
 
@@ -49,7 +47,7 @@ export function Stage({ ariaLabel, reducedMotion }: Props) {
         <color attach="background" args={['#101013']} />
         <Suspense fallback={null}>
           <Lighting shadows={!reducedMotion} />
-          <ProofCube />
+          <BlasterRig />
         </Suspense>
         {import.meta.env.DEV && <Perf position="bottom-left" />}
       </Canvas>
