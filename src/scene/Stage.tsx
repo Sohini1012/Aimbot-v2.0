@@ -6,6 +6,8 @@ import { Lighting } from './Lighting'
 import { scrollState } from './scrollState'
 import { Blaster } from '@/models/Blaster'
 import { CameraRig } from './CameraRig'
+import { WalkLight } from './WalkLight'
+import { SignalPath } from './SignalPath'
 import { Arena } from '@/game/Arena'
 import type { AimTrainer } from '@/game/useAimTrainer'
 
@@ -43,6 +45,7 @@ function SceneSwitch({ trainer }: { trainer: AimTrainer }) {
     <>
       <group ref={blasterRef}>
         <BlasterRig />
+        <SignalPath />
       </group>
       <group ref={arenaRef} visible={false}>
         <Arena trainer={trainer} />
@@ -70,6 +73,7 @@ export function Stage({ ariaLabel, reducedMotion, trainer }: Props) {
         <color attach="background" args={['#101013']} />
         <Suspense fallback={null}>
           <Lighting shadows={!reducedMotion} />
+          <WalkLight />
           <CameraRig reduced={reducedMotion} />
           <SceneSwitch trainer={trainer} />
         </Suspense>

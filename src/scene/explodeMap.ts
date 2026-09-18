@@ -47,6 +47,32 @@ function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3)
 }
 
+/** §8 beat 1 asks for a slight overshoot on the snap, settling with a
+ *  back.out(1.4) feel. This is that curve. */
+export function backOut(t: number, overshoot = 1.4): number {
+  const c = overshoot + 1
+  return 1 + c * Math.pow(t - 1, 3) + overshoot * Math.pow(t - 1, 2)
+}
+
+/**
+ * Beat 1 — where each part flies in from.
+ *
+ * Derived from the explode vector rather than authored separately: a part that
+ * separates upward also arrives from above, which makes the materialise and
+ * the explode read as the same mechanism running in opposite directions.
+ * The scatter is deliberately much wider than the explode so parts start off
+ * screen.
+ */
+export function scatterOffset(id: PartId): readonly [number, number, number] {
+  const spec = EXPLODE[id]
+  const spread = 4.2
+  return [
+    spec.offset[0] * spread,
+    spec.offset[1] * spread + 1.4,
+    spec.offset[2] * spread,
+  ]
+}
+
 /**
  * How far along its vector a part should be, given overall explode progress.
  * The stagger means `delay` shifts a part's window later without shortening it.

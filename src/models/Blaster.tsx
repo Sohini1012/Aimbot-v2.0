@@ -8,7 +8,7 @@ import { Stock } from './Stock'
 import { Mag } from './Mag'
 import { Internals, type InternalRefs } from './Internals'
 import { placementOf } from './placement'
-import { EXPLODE, partProgress } from '@/scene/explodeMap'
+import { EXPLODE, partProgress, backOut, scatterOffset } from '@/scene/explodeMap'
 import { scrollState } from '@/scene/scrollState'
 import type { PartId } from '@/content/types'
 
@@ -37,6 +37,17 @@ function explodeAmount(): number {
   return 0
 }
 
+/**
+ * How scattered the parts are, 1 = fully apart and off screen, 0 = assembled.
+ * Beat 0 holds them scattered; beat 1 snaps them together with an overshoot.
+ */
+function scatterAmount(): number {
+  const { beat, beatProgress } = scrollState
+  if (beat === 0) return 1
+  if (beat === 1) return 1 - backOut(beatProgress)
+  return 0
+}
+
 const tmp = new Vector3()
 
 export function Blaster() {
@@ -60,6 +71,7 @@ export function Blaster() {
 
   useFrame(() => {
     const amount = explodeAmount()
+    const scatter = scatterAmount()
 
     const apply = (
       ref: { current: Group | null },
@@ -69,8 +81,21 @@ export function Blaster() {
       const g = ref.current
       if (!g) return
       const spec = EXPLODE[id]
+
+      // Explode and materialise share the same slot: only one is ever
+      // non-zero, because beat 1 finishes long before beat 3 starts.
       const t = partProgress(amount, spec.delay)
       tmp.set(spec.offset[0], spec.offset[1], spec.offset[2]).multiplyScalar(t)
+
+      if (scatter > 0) {
+        const s = scatterOffset(id)
+        // stagger the arrival so parts do not all land on the same frame
+        const local = Math.min(1, Math.max(0, scatter * (1 + spec.delay)))
+        tmp.x += s[0] * local
+        tmp.y += s[1] * local
+        tmp.z += s[2] * local
+      }
+
       g.position.set(base[0] + tmp.x, base[1] + tmp.y, base[2] + tmp.z)
       if (spec.spin) {
         g.rotation.set(spec.spin[0] * t, spec.spin[1] * t, spec.spin[2] * t)
