@@ -17,7 +17,7 @@ export const HARDWARE: readonly HardwarePart[] = [
     name: 'MPU-9250 (9-DoF IMU)',
     short: 'MPU-9250',
     role: 'Accelerometer, gyroscope and magnetometer. Supplies the orientation that becomes cursor motion.',
-    placement: 'Mounted flat along the top rail axis, as close to the barrel line as possible.',
+    placement: 'Mounted flat mid-body, along the top rail axis so it shares the barrel line.',
     note: 'Mounting it on the barrel axis means the cursor tracks where the gun actually points.',
     inWalk: true,
   },
@@ -32,10 +32,12 @@ export const HARDWARE: readonly HardwarePart[] = [
   },
   {
     id: 'buttons',
-    name: '5 × tactile push buttons',
+    name: '4 × tactile push buttons',
     short: 'BUTTONS',
-    role: 'Reload, weapon swap, clutch (pause tracking), sensitivity cycle and recentre.',
-    placement: 'Thumb cluster on the left side of the shell.',
+    role: 'Reload and clutch under the right thumb; grenade and aux under the left, forward on the body.',
+    placement:
+      'Split across both sides of the shell — reload and clutch right, grenade and aux left and forward.',
+    note: 'The clutch is the important one: hold it and tracking suspends, so you can reposition your arm without moving the cursor.',
     inWalk: true,
   },
   {
@@ -52,7 +54,7 @@ export const HARDWARE: readonly HardwarePart[] = [
     name: 'Analog thumb joystick',
     short: 'JOYSTICK',
     role: 'Movement axis (WASD emulation), so the controller is usable one-handed.',
-    placement: 'Top of the stock, right thumb.',
+    placement: 'On the front stability handle, under the supporting thumb.',
     inWalk: true,
   },
   {

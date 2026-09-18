@@ -78,22 +78,44 @@ export const BUILD_LOG = {
   ],
 } as const
 
-/** §16: costs are not in the source-of-truth document. Left null deliberately —
- *  the table renders a dash until the real figures are supplied. */
+/** Real figures supplied by the team. Salvaged and already-owned items are 0;
+ *  nothing here is estimated. */
 export const BOM: readonly BomEntry[] = [
-  { item: 'Nerf N-Strike Elite Retaliator (shell)', qty: 1, sourcing: 'reused', cost: null },
-  { item: 'Raspberry Pi Pico (RP2040)', qty: 1, sourcing: 'bought', cost: null },
-  { item: 'MPU-9250 9-DoF IMU breakout', qty: 1, sourcing: 'bought', cost: null },
-  { item: 'Omron D2FC micro-switch (from a dead Logitech mouse)', qty: 1, sourcing: 'e-waste', cost: null },
-  { item: '6 × 6 mm tactile push button', qty: 5, sourcing: 'bought', cost: null },
-  { item: '10k rotary potentiometer', qty: 1, sourcing: 'bought', cost: null },
-  { item: 'KY-023 analog thumb joystick module', qty: 1, sourcing: 'bought', cost: null },
-  { item: 'Zero PCB / perfboard', qty: 1, sourcing: 'e-waste', cost: null },
-  { item: 'Dupont jumper wires', qty: 1, sourcing: 'e-waste', cost: null },
-  { item: 'Micro-USB cable', qty: 1, sourcing: 'reused', cost: null },
+  {
+    item: 'Nerf N-Strike Elite Retaliator (shell)',
+    qty: 1,
+    sourcing: 'reused',
+    cost: 0,
+    note: 'Already owned — not bought for this build.',
+  },
+  { item: 'Raspberry Pi Pico (RP2040)', qty: 1, sourcing: 'bought', cost: 380 },
+  { item: 'MPU-9250 9-DoF IMU breakout', qty: 1, sourcing: 'bought', cost: 300 },
+  {
+    item: 'Omron D2FC micro-switch',
+    qty: 1,
+    sourcing: 'e-waste',
+    cost: 0,
+    note: 'Harvested from a dead Logitech mouse.',
+  },
+  {
+    item: '6 × 6 mm tactile push button',
+    qty: 10,
+    sourcing: 'bought',
+    cost: 20,
+    note: '₹2 each. Ten bought, four wired into the build, the rest spares.',
+  },
+  { item: '10k rotary potentiometer', qty: 1, sourcing: 'bought', cost: 15 },
+  { item: 'KY-023 analog thumb joystick module', qty: 1, sourcing: 'bought', cost: 40 },
+  { item: 'Zero PCB / perfboard', qty: 1, sourcing: 'bought', cost: 35 },
+  { item: 'Dupont jumper wires', qty: 1, sourcing: 'bought', cost: 40 },
+  { item: 'Single-strand hookup wire', qty: 1, sourcing: 'bought', cost: 60 },
+  { item: 'USB cable', qty: 1, sourcing: 'bought', cost: 15 },
 ]
 
-export const BOM_TOTAL_NOTE = 'Target under ₹1500. Actual build ≈ ₹900–1200.' as const
+export const BOM_TOTAL = BOM.reduce((sum, row) => sum + (row.cost ?? 0), 0)
+
+export const BOM_TOTAL_NOTE =
+  'Target was under ₹1500. The shell and the trigger switch cost nothing — one was already on the shelf, the other came out of a dead mouse.' as const
 
 export const TEAM: readonly TeamMember[] = [
   { name: 'Shaik Luqman', role: 'Lead — firmware, sensor fusion, site' },

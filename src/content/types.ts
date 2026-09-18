@@ -43,8 +43,11 @@ export interface BomEntry {
   item: string
   qty: number
   sourcing: 'e-waste' | 'bought' | 'reused'
-  /** Rupees. null = not yet supplied by the team; never invent a figure. */
+  /** Rupees, as actually paid. 0 = salvaged or already owned.
+   *  null = not yet supplied by the team; never invent a figure. */
   cost: number | null
+  /** Shown as a footnote in the table when present. */
+  note?: string
 }
 
 export interface TeamMember {

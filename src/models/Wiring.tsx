@@ -9,7 +9,7 @@ import {
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { DIM } from './scale'
-import { placementOf } from './placement'
+import { placementOf, BUTTON_CLUSTERS } from './placement'
 
 /** Dupont ribbon colours — the real ones are garish and that is the point. */
 const WIRE_COLOURS = ['#d94a3d', '#e0a02a', '#3f8f4f', '#2f6fbf', '#8a4fbf', '#d8d8d8'] as const
@@ -55,7 +55,6 @@ export function Wiring() {
   const runs = useMemo<readonly Run[]>(() => {
     const pico = placementOf('pico').position
     const imu = placementOf('imu').position
-    const buttons = placementOf('buttons').position
     const pot = placementOf('pot').position
     const joystick = placementOf('joystick').position
     const usb = placementOf('usb').position
@@ -63,8 +62,21 @@ export function Wiring() {
     return [
       // I²C to the IMU — SDA/SCL, runs forward along the rail
       { id: 'i2c', from: pico, to: imu, via: [[0.2, 0.08, 0.04]], count: 4 },
-      // GPIO to the thumb cluster
-      { id: 'gpio', from: pico, to: buttons, via: [[-0.36, -0.18, 0.1]], count: 5 },
+      // GPIO out to both thumb clusters — right side, then left and forward
+      {
+        id: 'gpio-right',
+        from: pico,
+        to: BUTTON_CLUSTERS[0].position,
+        via: [[-0.34, -0.16, -0.1]],
+        count: 3,
+      },
+      {
+        id: 'gpio-left',
+        from: pico,
+        to: BUTTON_CLUSTERS[1].position,
+        via: [[0.02, -0.04, 0.12]],
+        count: 3,
+      },
       // ADC to the potentiometer in the foregrip
       { id: 'adc-pot', from: pico, to: pot, via: [[0.42, -0.3, 0.08]], count: 3 },
       // ADC to the joystick on the stock

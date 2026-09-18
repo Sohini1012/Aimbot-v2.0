@@ -1,67 +1,51 @@
-import { useLayoutEffect, useRef } from 'react'
-import { Object3D, type InstancedMesh } from 'three'
+import { useMemo } from 'react'
 import { DIM, mm } from './scale'
 import { blackPlasticMaterial, metalMaterial } from './materials'
-
-/** Thumb-cluster layout, in local units relative to the cluster centre. */
-export const BUTTON_SLOTS: readonly (readonly [number, number])[] = [
-  [-mm(11), mm(9)],
-  [mm(1), mm(11)],
-  [mm(12), mm(7)],
-  [-mm(7), -mm(6)],
-  [mm(6), -mm(8)],
-]
+import { Instanced, type InstanceSpec } from './Instanced'
+import { BUTTON_CLUSTERS } from './placement'
 
 /**
- * Five 6 × 6 mm tactile switches: reload, weapon swap, clutch, sensitivity
- * cycle, recentre.
+ * Four 6 × 6 mm tactile switches in two clusters: reload and clutch under the
+ * right thumb, grenade and aux forward on the left.
  *
- * §11 asks for these to be instanced. Two instanced meshes (body + plunger)
- * carry all five, so the cluster costs 2 draw calls instead of 10.
+ * Both clusters are instanced together — two instanced meshes (body and
+ * plunger) carry all four buttons wherever they sit on the shell, so the whole
+ * arrangement costs 2 draw calls.
  */
 export function Buttons() {
-  const bodies = useRef<InstancedMesh>(null)
-  const plungers = useRef<InstancedMesh>(null)
+  const { bodies, plungers } = useMemo(() => {
+    const b: InstanceSpec[] = []
+    const p: InstanceSpec[] = []
 
-  useLayoutEffect(() => {
-    const dummy = new Object3D()
-    const b = bodies.current
-    const p = plungers.current
-    if (!b || !p) return
+    for (const cluster of BUTTON_CLUSTERS) {
+      for (let i = 0; i < cluster.slots; i++) {
+        // spread the pair along the body axis, centred on the cluster anchor
+        const along = (i - (cluster.slots - 1) / 2) * mm(14)
+        const x = cluster.position[0] + along
+        const y = cluster.position[1]
+        const z = cluster.position[2]
+        const facing = Math.sign(z) || 1
 
-    BUTTON_SLOTS.forEach(([x, z], i) => {
-      dummy.position.set(x, 0, z)
-      dummy.updateMatrix()
-      b.setMatrixAt(i, dummy.matrix)
+        b.push({ position: [x, y, z], rotation: [Math.PI / 2, 0, 0] })
+        p.push({
+          position: [x, y, z + facing * (DIM.button.h / 2 + DIM.button.plunger / 2)],
+          rotation: [Math.PI / 2, 0, 0],
+        })
+      }
+    }
 
-      dummy.position.set(x, DIM.button.h / 2 + DIM.button.plunger / 2, z)
-      dummy.updateMatrix()
-      p.setMatrixAt(i, dummy.matrix)
-    })
-
-    b.instanceMatrix.needsUpdate = true
-    p.instanceMatrix.needsUpdate = true
+    return { bodies: b, plungers: p }
   }, [])
 
   return (
     <group>
-      <instancedMesh
-        ref={bodies}
-        args={[undefined, undefined, BUTTON_SLOTS.length]}
-        material={metalMaterial}
-        castShadow
-      >
+      <Instanced instances={bodies} material={metalMaterial} castShadow>
         <boxGeometry args={[DIM.button.s, DIM.button.h, DIM.button.s]} />
-      </instancedMesh>
+      </Instanced>
 
-      <instancedMesh
-        ref={plungers}
-        args={[undefined, undefined, BUTTON_SLOTS.length]}
-        material={blackPlasticMaterial}
-        castShadow
-      >
+      <Instanced instances={plungers} material={blackPlasticMaterial} castShadow>
         <cylinderGeometry args={[mm(1.7), mm(1.7), DIM.button.plunger, 10]} />
-      </instancedMesh>
+      </Instanced>
     </group>
   )
 }

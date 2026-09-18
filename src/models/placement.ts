@@ -16,23 +16,22 @@ export const PLACEMENT: Partial<Record<PartId, Placement>> = {
   // "inside the shell, behind the magazine well"
   pico: { position: [-0.24, -0.04, 0], rotation: [0, 0, 0] },
 
-  // "flat along the top rail axis, as close to the barrel line as possible"
-  imu: { position: [0.72, 0.19, 0], rotation: [0, 0, 0] },
+  // mid-body, on the top rail axis so it shares the barrel line
+  imu: { position: [0.16, 0.17, 0], rotation: [0, 0, 0] },
 
   // "bonded directly behind the Nerf trigger"
   omron: { position: [-0.37, -0.27, 0], rotation: [0, 0, 0.18] },
 
-  // "thumb cluster on the left side of the shell"
-  buttons: {
-    position: [-0.46, -0.3, HALF_DEPTH * 0.92],
-    rotation: [Math.PI / 2, 0, 0],
-  },
+  // Split across both sides — the clusters carry their own shell-local
+  // coordinates, so this group sits at the origin and only the explode
+  // offset moves it.
+  buttons: { position: [0, 0, 0], rotation: [0, 0, 0] },
 
   // "recessed in the foregrip, thumb-reachable"
-  pot: { position: [0.96, -0.46, HALF_DEPTH * 0.55], rotation: [Math.PI / 2.2, 0, 0] },
+  pot: { position: [1.02, -0.58, HALF_DEPTH * 0.5], rotation: [Math.PI / 2.2, 0, 0] },
 
-  // "top of the stock, right thumb"
-  joystick: { position: [-1.44, 0.3, -HALF_DEPTH * 0.3], rotation: [0, 0, 0] },
+  // on the front stability handle, under the supporting thumb
+  joystick: { position: [0.86, -0.3, HALF_DEPTH * 0.62], rotation: [0.35, 0, 0] },
 
   // "floor of the shell cavity"
   pcb: { position: [-0.18, -0.15, 0], rotation: [0, 0, 0] },
@@ -40,6 +39,27 @@ export const PLACEMENT: Partial<Record<PartId, Placement>> = {
   // "out of the grip base"
   usb: { position: [-0.86, -0.99, 0], rotation: [0, 0, 0.5] },
 }
+
+/**
+ * The two thumb clusters, in shell-local coordinates.
+ * Right side is -Z, left side is +Z.
+ */
+export const BUTTON_CLUSTERS = [
+  {
+    id: 'right',
+    label: 'RELOAD / CLUTCH',
+    position: [-0.4, -0.26, -HALF_DEPTH * 0.94] as const,
+    rotation: [Math.PI / 2, 0, 0] as const,
+    slots: 2,
+  },
+  {
+    id: 'left',
+    label: 'GRENADE / AUX',
+    position: [0.24, -0.08, HALF_DEPTH * 0.94] as const,
+    rotation: [-Math.PI / 2, 0, 0] as const,
+    slots: 2,
+  },
+] as const
 
 export function placementOf(id: PartId): Placement {
   const p = PLACEMENT[id]
