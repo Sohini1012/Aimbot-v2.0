@@ -54,3 +54,29 @@ export function setProgress(p: number, walkCount: number): void {
   scrollState.walkIndex =
     beat === 4 ? Math.min(walkCount - 1, Math.floor(beatProgress * walkCount)) : -1
 }
+
+/**
+ * §10's paper sections interleave with §8's beats, so one monolithic pinned
+ * region cannot hold both — a full-bleed paper section would have to sit on
+ * top of the canvas mid-beat.
+ *
+ * Instead each 3D region owns a slice of the global beat timeline and maps its
+ * own local scroll progress into that slice. The beat maths above is unchanged;
+ * it just gets fed from three triggers rather than one.
+ */
+export const REGIONS = {
+  hero: { from: 0.0, to: 0.26 },
+  inside: { from: 0.26, to: 0.86 },
+  game: { from: 0.86, to: 1.0 },
+} as const
+
+export type RegionName = keyof typeof REGIONS
+
+export function setRegionProgress(
+  region: RegionName,
+  local: number,
+  walkCount: number,
+): void {
+  const { from, to } = REGIONS[region]
+  setProgress(from + Math.min(1, Math.max(0, local)) * (to - from), walkCount)
+}
