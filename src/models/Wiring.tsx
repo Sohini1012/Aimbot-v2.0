@@ -51,7 +51,7 @@ function v(p: readonly [number, number, number]): Vector3 {
  * like the inside of this build, and the honesty of the wiring is part of what
  * the exploded view is showing.
  */
-export function Wiring() {
+export function Wiring({ simplified = false }: { simplified?: boolean }) {
   const runs = useMemo<readonly Run[]>(() => {
     const pico = placementOf('pico').position
     const imu = placementOf('imu').position
@@ -90,7 +90,11 @@ export function Wiring() {
     const geometries: TubeGeometry[] = []
 
     runs.forEach((run, runIndex) => {
-      for (let i = 0; i < run.count; i++) {
+      // §11 — the simplified path halves the strands per run. The harness
+      // still reads as a harness; it just stops paying for strands that are
+      // three pixels apart on a phone.
+      const strands = simplified ? Math.max(1, Math.ceil(run.count / 2)) : run.count
+      for (let i = 0; i < strands; i++) {
         const seed = runIndex * 17 + i
         const spread = 0.012
 
@@ -135,7 +139,7 @@ export function Wiring() {
     const result = mergeGeometries(geometries, false)
     for (const g of geometries) g.dispose()
     return result
-  }, [runs])
+  }, [runs, simplified])
 
   if (!merged) return null
 

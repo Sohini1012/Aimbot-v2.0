@@ -36,11 +36,17 @@ const HISTORY = 160
  * and rendering it through setState would re-render the whole section at 60 Hz.
  * Only the HUD numbers are lifted into state, on a throttle.
  */
-export function useAimTrainer(active: boolean) {
+export function useAimTrainer(active: boolean, autoStart = true) {
   const stateRef = useRef<GameState>(createState())
   const filterRef = useRef(new OneEuroFilter2D())
   const tremorRef = useRef(new TremorSource())
   const traceRef = useRef<Trace[]>([])
+
+  /** §5 — under reduced motion the sim must not run on its own; the visitor
+   *  starts it deliberately. */
+  const [running, setRunning] = useState(autoStart)
+  const runningRef = useRef(running)
+  runningRef.current = running
 
   const [mode, setMode] = useState<InputMode>('pointer')
   const [filterOn, setFilterOn] = useState(true)
@@ -86,8 +92,11 @@ export function useAimTrainer(active: boolean) {
     forceTick((n) => n + 1)
   }, [])
 
+  const start = useCallback(() => setRunning(true), [])
+
   /** Advance one frame. Called from the render loop. */
   const step = useCallback(() => {
+    if (!runningRef.current) return
     const now = performance.now() / 1000
     const state = stateRef.current
     tick(state, now)
@@ -133,7 +142,7 @@ export function useAimTrainer(active: boolean) {
 
   // keyboard: arrows move, space clutches, enter fires (§12 — keyboard-only play)
   useEffect(() => {
-    if (!active) return
+    if (!active || !running) return
 
     const KEY_STEP = 0.02
     const held = new Set<string>()
@@ -174,7 +183,7 @@ export function useAimTrainer(active: boolean) {
       window.removeEventListener('keydown', onDown)
       window.removeEventListener('keyup', onUp)
     }
-  }, [active, fire, setClutch, onPointerMove])
+  }, [active, running, fire, setClutch, onPointerMove])
 
   // reset the filter when the input model changes, so the first frame after a
   // toggle is not a spike from stale history
@@ -187,6 +196,8 @@ export function useAimTrainer(active: boolean) {
       stateRef,
       traceRef,
       readoutRef,
+      running,
+      start,
       mode,
       setMode,
       filterOn,
@@ -199,7 +210,7 @@ export function useAimTrainer(active: boolean) {
       reset,
       step,
     }),
-    [mode, filterOn, sensitivity, onPointerMove, fire, setClutch, reset, step],
+    [running, start, mode, filterOn, sensitivity, onPointerMove, fire, setClutch, reset, step],
   )
 }
 

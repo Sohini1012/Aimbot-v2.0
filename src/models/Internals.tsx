@@ -41,7 +41,7 @@ export interface InternalRefs {
 
 /** Every internal part, each in its own ref'd group at its §7 placement, so
  *  the explode timeline can drive them independently. */
-export function Internals({ refs }: { refs: InternalRefs }) {
+export function Internals({ refs, simplified = false }: { refs: InternalRefs; simplified?: boolean }) {
   return (
     <group>
       <group ref={refs.pcb} {...spread('pcb')}>
@@ -69,7 +69,7 @@ export function Internals({ refs }: { refs: InternalRefs }) {
         <UsbTail />
       </group>
       <group ref={refs.wires}>
-        <Wiring />
+        <Wiring simplified={simplified} />
       </group>
     </group>
   )

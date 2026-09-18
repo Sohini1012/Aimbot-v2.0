@@ -12,7 +12,7 @@ import { Arena } from '@/game/Arena'
 import type { AimTrainer } from '@/game/useAimTrainer'
 
 /** Rotates the assembled model through the orbit and explode beats. */
-function BlasterRig() {
+function BlasterRig({ simplified }: { simplified: boolean }) {
   const ref = useRef<Group>(null)
 
   useFrame(() => {
@@ -24,13 +24,13 @@ function BlasterRig() {
 
   return (
     <group ref={ref} scale={0.78} position={[0, -0.1, 0]}>
-      <Blaster />
+      <Blaster simplified={simplified} />
     </group>
   )
 }
 
 /** Swaps the blaster out for the arena at the muzzle dive (§8 beat 7). */
-function SceneSwitch({ trainer }: { trainer: AimTrainer }) {
+function SceneSwitch({ trainer, simplified }: { trainer: AimTrainer; simplified: boolean }) {
   const blasterRef = useRef<Group>(null)
   const arenaRef = useRef<Group>(null)
 
@@ -44,7 +44,7 @@ function SceneSwitch({ trainer }: { trainer: AimTrainer }) {
   return (
     <>
       <group ref={blasterRef}>
-        <BlasterRig />
+        <BlasterRig simplified={simplified} />
         <SignalPath />
       </group>
       <group ref={arenaRef} visible={false}>
@@ -58,24 +58,25 @@ interface Props {
   /** §12 — canvas is decorative-with-a-label; the real story is in the DOM. */
   ariaLabel: string
   reducedMotion: boolean
+  simplified: boolean
   trainer: AimTrainer
 }
 
-export function Stage({ ariaLabel, reducedMotion, trainer }: Props) {
+export function Stage({ ariaLabel, reducedMotion, simplified, trainer }: Props) {
   return (
     <div className="pointer-events-none fixed inset-0 z-0" role="img" aria-label={ariaLabel}>
       <Canvas
-        shadows={!reducedMotion}
-        dpr={[1, 2]}
+        shadows={!reducedMotion && !simplified}
+        dpr={simplified ? [1, 1.5] : [1, 2]}
         gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         camera={{ position: [0, 0.6, 5.5], fov: 38 }}
       >
         <color attach="background" args={['#101013']} />
         <Suspense fallback={null}>
-          <Lighting shadows={!reducedMotion} />
+          <Lighting shadows={!reducedMotion && !simplified} />
           <WalkLight />
-          <CameraRig reduced={reducedMotion} />
-          <SceneSwitch trainer={trainer} />
+          <CameraRig reduced={reducedMotion} simplified={simplified} />
+          <SceneSwitch trainer={trainer} simplified={simplified} />
         </Suspense>
         {import.meta.env.DEV && <Perf position="bottom-left" />}
       </Canvas>

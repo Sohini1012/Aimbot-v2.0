@@ -23,7 +23,7 @@ const target = new Vector3()
 const lookTarget = new Vector3()
 const currentLook = new Vector3()
 
-export function CameraRig({ reduced }: { reduced: boolean }) {
+export function CameraRig({ reduced, simplified = false }: { reduced: boolean; simplified?: boolean }) {
   const { camera } = useThree()
   const initialised = useRef(false)
 
@@ -53,9 +53,16 @@ export function CameraRig({ reduced }: { reduced: boolean }) {
       py = 0.5 + beatProgress * 0.9
       px = beatProgress * 1.6
     } else if (beat === 4) {
-      // fly to the component under inspection
-      const id = WALK_ORDER[Math.max(0, walkIndex)]
-      if (id) {
+      // §11 — the simplified path holds one framed shot of the exploded view
+      // instead of flying between components. The flights are the most
+      // expensive thing the camera does and they read poorly at phone width,
+      // where the part being inspected is a handful of pixels.
+      const id = simplified ? undefined : WALK_ORDER[Math.max(0, walkIndex)]
+      if (simplified) {
+        px = 1.4
+        py = 1.2
+        pz = 7.0
+      } else if (id) {
         const place = placementOf(id).position
         const spec = EXPLODE[id]
         lx = (place[0] + spec.offset[0]) * SCENE_SCALE

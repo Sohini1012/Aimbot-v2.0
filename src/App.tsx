@@ -11,6 +11,7 @@ import { Team } from './components/sections/Team'
 import { Footer } from './components/sections/Footer'
 import { useLenis } from './hooks/useLenis'
 import { useReducedMotion } from './hooks/useReducedMotion'
+import { useSimplified } from './hooks/useSimplified'
 import { useScrollBeat } from './hooks/useScrollBeat'
 import { scrollState } from './scene/scrollState'
 import { useAimTrainer } from './game/useAimTrainer'
@@ -40,6 +41,7 @@ const BEAT_LABELS: readonly string[] = [
 
 export function App() {
   const reduced = useReducedMotion()
+  const simplified = useSimplified()
   const heroRegion = useRef<HTMLDivElement>(null)
   const insideRegion = useRef<HTMLDivElement>(null)
   const gameRegion = useRef<HTMLDivElement>(null)
@@ -47,7 +49,7 @@ export function App() {
   const [beatLabel, setBeatLabel] = useState<string>(BEAT_LABELS[0] ?? '')
   const lastBeat = useRef(-1)
 
-  const trainer = useAimTrainer(true)
+  const trainer = useAimTrainer(true, !reduced)
 
   useLenis(!reduced)
 
@@ -88,7 +90,12 @@ export function App() {
       <Nav />
 
       <Suspense fallback={null}>
-        <Stage ariaLabel={beatLabel} reducedMotion={reduced} trainer={trainer} />
+        <Stage
+          ariaLabel={beatLabel}
+          reducedMotion={reduced}
+          simplified={simplified}
+          trainer={trainer}
+        />
       </Suspense>
 
       <main className="relative z-10">

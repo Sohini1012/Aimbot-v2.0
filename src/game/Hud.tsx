@@ -60,6 +60,26 @@ export function Hud({ trainer }: { trainer: AimTrainer }) {
   const readout = trainer.readoutRef.current
   const clutched = trainer.stateRef.current.clutched
 
+  if (!trainer.running) {
+    return (
+      <div className="rounded-card-lg border border-[var(--hairline-dark)] bg-panel p-8 text-center">
+        <p className="font-mono text-[10px] tracking-[0.2em] text-grey-3 uppercase">
+          Reduced motion is on
+        </p>
+        <p className="mt-3 text-sm text-grey-1">
+          The trainer does not start on its own. It moves continuously while it runs.
+        </p>
+        <button
+          type="button"
+          onClick={trainer.start}
+          className="mt-5 rounded-chip border border-amber bg-[var(--amber-20)] px-5 py-3 font-mono text-[11px] tracking-[0.2em] text-amber uppercase transition-colors duration-200 hover:bg-[var(--amber-30)]"
+        >
+          Start the trainer
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="rounded-card-lg border border-[var(--hairline-dark)] bg-panel p-5">
       <div

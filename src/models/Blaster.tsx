@@ -50,7 +50,7 @@ function scatterAmount(): number {
 
 const tmp = new Vector3()
 
-export function Blaster() {
+export function Blaster({ simplified = false }: { simplified?: boolean }) {
   const shellLeft = useRef<Group>(null)
   const shellRight = useRef<Group>(null)
   const barrel = useRef<Group>(null)
@@ -135,7 +135,7 @@ export function Blaster() {
         <Mag />
       </group>
 
-      <Internals refs={internals} />
+      <Internals refs={internals} simplified={simplified} />
     </Center>
   )
 }
