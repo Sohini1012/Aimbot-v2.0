@@ -13,9 +13,15 @@ function DemoSlot() {
     let cancelled = false
     // HEAD rather than letting <video> fail: a 404 inside a media element
     // surfaces as a console error and a broken control strip.
+    //
+    // The content-type check is load-bearing. Vite's dev server (and most SPA
+    // hosts, Vercel included) answer unknown paths with index.html and a 200,
+    // so r.ok alone is true for a file that does not exist — which renders
+    // exactly the empty player §9b says never to ship.
     fetch('/video/demo.mp4', { method: 'HEAD' })
       .then((r) => {
-        if (!cancelled) setHasVideo(r.ok)
+        const type = r.headers.get('content-type') ?? ''
+        if (!cancelled) setHasVideo(r.ok && type.startsWith('video/'))
       })
       .catch(() => {
         if (!cancelled) setHasVideo(false)
@@ -52,7 +58,7 @@ function DemoSlot() {
 }
 
 export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
-  const surfaceRef = useRef<HTMLDivElement>(null)
+  const surfaceRef = useRef<HTMLElement>(null)
 
   // Pointer movement over the arena surface feeds the trainer as intent.
   useEffect(() => {
@@ -64,6 +70,12 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
       trainer.onPointerMove(e.movementX / rect.width, -e.movementY / rect.height)
     }
     const onDown = (e: PointerEvent) => {
+      // The whole section is the play surface, so a click on the HUD would
+      // otherwise fire a shot and score it as a miss.
+      const target = e.target
+      if (target instanceof Element && target.closest('button, input, a, video, label')) {
+        return
+      }
       e.preventDefault()
       trainer.fire()
     }
@@ -77,7 +89,11 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
   }, [trainer])
 
   return (
-    <section id="game" className="relative px-5 py-28 sm:px-8 sm:py-36">
+    <section
+      ref={surfaceRef}
+      id="game"
+      className="relative cursor-crosshair px-5 py-28 sm:px-8 sm:py-36"
+    >
       <div className="mx-auto max-w-[1200px]">
         <SectionHeading numeral={GAME_SECTION.numeral} title={GAME_SECTION.title} tone="noir" />
 
@@ -94,22 +110,20 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
             </div>
           </div>
 
-          <div className="lg:col-span-7">
-            {/* The arena itself renders in the page-wide canvas behind this
-                surface; this element only captures input. */}
-            <div
-              ref={surfaceRef}
-              className="relative aspect-video cursor-crosshair rounded-card-lg border border-[var(--hairline-dark)]"
-              aria-hidden="true"
-            />
+          {/* Right column is deliberately open: the arena renders in the
+              page-wide canvas behind it, so anything placed here would sit on
+              top of the play area. */}
+          <div className="hidden lg:col-span-7 lg:block" aria-hidden="true" />
+        </div>
 
-            <div className="mt-8">
-              <h3 className="mb-4 font-mono text-[11px] tracking-[0.22em] text-grey-3 uppercase">
-                The real demo
-              </h3>
-              <DemoSlot />
-            </div>
-          </div>
+        <div className="mt-20 max-w-3xl">
+          <h3 className="mb-4 font-mono text-[11px] tracking-[0.22em] text-grey-3 uppercase">
+            The real demo
+          </h3>
+          <DemoSlot />
+          <p className="mt-4 text-sm text-grey-2">
+            The trainer above is a simulation. This is the hardware itself.
+          </p>
         </div>
       </div>
     </section>
