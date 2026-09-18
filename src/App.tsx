@@ -1,14 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Nav } from './components/Nav'
 import { Hero } from './components/sections/Hero'
 import { Problem } from './components/sections/Problem'
 import { Team } from './components/sections/Team'
-import { Stage } from './scene/Stage'
 import { useLenis } from './hooks/useLenis'
 import { useReducedMotion } from './hooks/useReducedMotion'
 import { setProgress, scrollState, BEATS } from './scene/scrollState'
 import { WALK_ORDER } from './content/hardware'
+
+/**
+ * §11 — three.js is ~285 KB gzipped and must not sit in the critical path.
+ * Lazy-loading the stage lets the hero heading paint immediately and the model
+ * fade in behind it, rather than showing a blank screen behind a loader.
+ * The Suspense fallback is deliberately null: the dark hero section is already
+ * the correct backdrop, so there is nothing to show while three.js arrives.
+ */
+const Stage = lazy(() => import('./scene/Stage').then((m) => ({ default: m.Stage })))
 
 const BEAT_LABELS: readonly string[] = [
   'A dark stage with a faint wireframe silhouette of the controller.',
@@ -72,7 +80,9 @@ export function App() {
       </a>
 
       <Nav />
-      <Stage ariaLabel={beatLabel} reducedMotion={reduced} />
+      <Suspense fallback={null}>
+        <Stage ariaLabel={beatLabel} reducedMotion={reduced} />
+      </Suspense>
 
       <main className="relative z-10">
         {/* The pinned stage: BEATS span this scroll distance. */}
