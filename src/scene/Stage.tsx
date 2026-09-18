@@ -6,16 +6,16 @@ import { Lighting } from './Lighting'
 import { scrollState } from './scrollState'
 import { Blaster } from '@/models/Blaster'
 
-/** Temporary rig: spins the assembled blaster off scroll so the silhouette can
- *  be judged from every angle while it is being iterated on. Replaced by the
- *  real camera rig and explode timeline in milestones 9-13. */
+/** Interim rig: a slow orbit so the exploded view can be judged from a moving
+ *  camera. The real camera flights land in milestones 10-13. */
 function BlasterRig() {
   const ref = useRef<Group>(null)
 
   useFrame(() => {
     const g = ref.current
     if (!g) return
-    g.rotation.y = -0.6 + scrollState.progress * Math.PI * 2
+    // 40 degrees of rotation across the explode, per §8 beat 3
+    g.rotation.y = -0.5 + scrollState.progress * 1.4
   })
 
   return (
