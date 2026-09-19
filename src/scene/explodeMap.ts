@@ -42,6 +42,18 @@ export const EXPLODE: Record<PartId, ExplodeSpec> = {
   usb: { offset: [-1.0, -0.7, 0.3], delay: 0.16, labelAnchor: [0, 0.08, 0] },
 }
 
+/**
+ * Reaches 1 at `rise` and then holds.
+ *
+ * This is the "time gap" between beats: without it every beat runs right up to
+ * the boundary and the next one starts on the same frame the previous one
+ * finished, so nothing is ever simply *shown*. The plateau gives each beat a
+ * stretch of scroll where the model just sits in its end state and can be read.
+ */
+export function plateau(t: number, rise = 0.7): number {
+  return Math.min(1, Math.max(0, t / rise))
+}
+
 /** Ease used for the separation — settles rather than arriving linearly. */
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3)

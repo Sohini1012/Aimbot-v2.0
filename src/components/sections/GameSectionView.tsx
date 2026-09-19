@@ -65,9 +65,12 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
     const el = surfaceRef.current
     if (!el) return
 
+    // The arena lives in the stage panel now, not behind this column, so
+    // aiming listens on the window and is scaled by the panel size.
     const onMove = (e: PointerEvent) => {
-      const rect = el.getBoundingClientRect()
-      trainer.onPointerMove(e.movementX / rect.width, -e.movementY / rect.height)
+      const w = window.innerWidth
+      const h = window.innerHeight
+      trainer.onPointerMove((e.movementX / w) * 2.2, (-e.movementY / h) * 2.2)
     }
     const onDown = (e: PointerEvent) => {
       // The whole section is the play surface, so a click on the HUD would
@@ -80,10 +83,10 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
       trainer.fire()
     }
 
-    el.addEventListener('pointermove', onMove)
+    window.addEventListener('pointermove', onMove)
     el.addEventListener('pointerdown', onDown)
     return () => {
-      el.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointermove', onMove)
       el.removeEventListener('pointerdown', onDown)
     }
   }, [trainer])
@@ -92,13 +95,13 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
     <section
       ref={surfaceRef}
       id="game"
-      className="relative cursor-crosshair px-5 py-28 sm:px-8 sm:py-36"
+      className="relative px-5 py-20 sm:px-8 lg:py-28"
     >
-      <div className="mx-auto max-w-[1200px]">
+      <div className="max-w-[620px] lg:pl-12">
         <SectionHeading numeral={GAME_SECTION.numeral} title={GAME_SECTION.title} tone="noir" />
 
-        <div className="grid gap-8 lg:grid-cols-12">
-          <div className="space-y-5 lg:col-span-5">
+        <div className="grid gap-8">
+          <div className="space-y-5">
             {GAME_SECTION.body.map((p) => (
               <p key={p.slice(0, 32)} className="text-grey-1">
                 {p}
@@ -110,13 +113,9 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
             </div>
           </div>
 
-          {/* Right column is deliberately open: the arena renders in the
-              page-wide canvas behind it, so anything placed here would sit on
-              top of the play area. */}
-          <div className="hidden lg:col-span-7 lg:block" aria-hidden="true" />
         </div>
 
-        <div className="mt-20 max-w-3xl">
+        <div className="mt-16">
           <h3 className="mb-4 font-mono text-[11px] tracking-[0.22em] text-grey-3 uppercase">
             The real demo
           </h3>

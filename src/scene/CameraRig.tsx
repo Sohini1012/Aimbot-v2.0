@@ -108,8 +108,10 @@ export function CameraRig({ reduced, simplified = false }: { reduced: boolean; s
       currentLook.copy(lookTarget)
       initialised.current = true
     } else {
-      // frame-rate independent damping
-      const k = 1 - Math.pow(0.0015, delta)
+      // Frame-rate independent damping. The base is deliberately high: a
+      // faster approach snaps to each waypoint and reads as cutting between
+      // shots, where this glides and the moves feel continuous.
+      const k = 1 - Math.pow(0.018, delta)
       camera.position.lerp(target, k)
       currentLook.lerp(lookTarget, k)
     }

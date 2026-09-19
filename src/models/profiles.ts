@@ -1,15 +1,19 @@
 import { Shape } from 'three'
 
 /**
- * Side-view silhouette of the Retaliator body, in world units with +X toward
- * the muzzle and +Y up. Proportions follow docs/REFERENCES.md — the overall
- * body spans x ∈ [-1.05, 1.55], which keeps the assembled blaster a little
- * under 3 units long so it frames cleanly at the hero camera distance.
+ * Side-view silhouette of the Retaliator, +X toward the muzzle, +Y up.
  *
- * The outline is traced as one closed loop: muzzle → top rail → rear → grip →
- * trigger guard → magazine well → back to the muzzle. Keeping it a single loop
- * (rather than booleans of primitives) means ExtrudeGeometry gives us clean
- * side walls and a bevel that reads as moulded plastic.
+ * Corrected against the references in docs/REFERENCES.md. Three things the
+ * first pass had wrong and this one fixes:
+ *
+ *  - It primes with a **top slide**, not an under-barrel pump. The slide rides
+ *    on the upper body and carries the blaster's single tactical rail.
+ *  - The stock is **very short** — reviewers call it unusably short for adults.
+ *  - The foregrip is a plain **cylinder**, not an angled wedge.
+ *
+ * Reviewers describe the overall read as a "pistol dressed as a rifle": a
+ * compact, handgun-proportioned body wearing rifle furniture. The outline
+ * below is deliberately stubbier than a carbine profile for that reason.
  */
 
 export interface Pt {
@@ -17,43 +21,36 @@ export interface Pt {
   y: number
 }
 
-/** Traced outline, counter-clockwise. */
+/** Main body: muzzle → top → rear → grip → trigger guard → magwell → back. */
 export const BODY_OUTLINE: readonly Pt[] = [
-  // muzzle face
-  { x: 1.55, y: -0.12 },
-  { x: 1.55, y: 0.16 },
-  // step up onto the top rail
-  { x: 1.34, y: 0.16 },
-  { x: 1.34, y: 0.3 },
-  // the long flat top rail — the IMU mounts along this axis
-  { x: -0.55, y: 0.3 },
-  // rear sight bump
-  { x: -0.62, y: 0.38 },
-  { x: -0.8, y: 0.38 },
-  { x: -0.86, y: 0.3 },
-  // rear face, where the stock snaps on
-  { x: -1.05, y: 0.28 },
-  { x: -1.05, y: -0.18 },
-  { x: -0.88, y: -0.2 },
-  // grip: rear edge falls away and back
-  { x: -0.99, y: -0.95 },
-  { x: -0.73, y: -1.02 },
-  // grip front edge climbing back to the body
-  { x: -0.52, y: -0.34 },
+  { x: 1.3, y: -0.1 },
+  { x: 1.3, y: 0.13 },
+  { x: 1.06, y: 0.15 },
+  { x: 1.06, y: 0.21 },
+  // upper body — the slide rides on top of this
+  { x: -0.7, y: 0.21 },
+  { x: -0.86, y: 0.19 },
+  { x: -0.95, y: 0.12 },
+  // rear face where the short stock snaps on
+  { x: -0.95, y: -0.12 },
+  { x: -0.8, y: -0.15 },
+  // grip, raked back
+  { x: -0.9, y: -0.88 },
+  { x: -0.62, y: -0.95 },
+  { x: -0.45, y: -0.3 },
   // trigger guard
-  { x: -0.44, y: -0.3 },
-  { x: -0.4, y: -0.46 },
-  { x: -0.2, y: -0.5 },
-  { x: -0.13, y: -0.34 },
-  { x: -0.12, y: -0.22 },
-  // magazine well, forward of the trigger guard and canted forward
-  { x: 0.04, y: -0.22 },
-  { x: 0.1, y: -0.74 },
-  { x: 0.46, y: -0.78 },
-  { x: 0.44, y: -0.22 },
-  // body underside running forward to the muzzle
-  { x: 1.2, y: -0.2 },
-  { x: 1.34, y: -0.16 },
+  { x: -0.38, y: -0.26 },
+  { x: -0.34, y: -0.44 },
+  { x: -0.14, y: -0.48 },
+  { x: -0.08, y: -0.3 },
+  { x: -0.07, y: -0.18 },
+  // magazine well, forward of the trigger guard
+  { x: 0.06, y: -0.18 },
+  { x: 0.1, y: -0.7 },
+  { x: 0.44, y: -0.72 },
+  { x: 0.42, y: -0.18 },
+  // underside forward to the muzzle
+  { x: 1.06, y: -0.16 },
 ]
 
 export function buildShape(points: readonly Pt[]): Shape {
@@ -69,37 +66,32 @@ export function buildShape(points: readonly Pt[]): Shape {
   return shape
 }
 
-/** The priming slide that sits above and behind the magazine well. */
+/**
+ * The priming slide. It sits on top of the body and carries the tactical rail,
+ * which is the blaster's most recognisable feature from the side.
+ */
 export const SLIDE_OUTLINE: readonly Pt[] = [
-  { x: 0.5, y: 0.02 },
-  { x: 1.12, y: 0.02 },
-  { x: 1.12, y: 0.24 },
-  { x: 0.5, y: 0.24 },
+  { x: -0.62, y: 0.21 },
+  { x: 1.02, y: 0.21 },
+  { x: 1.02, y: 0.38 },
+  { x: 0.9, y: 0.42 },
+  { x: -0.5, y: 0.42 },
+  { x: -0.62, y: 0.36 },
 ]
 
-/** Skeletal stock — it has a cut-out, it is not a solid block. */
+/** Short stock — barely a stock at all, which is accurate. */
 export const STOCK_OUTLINE: readonly Pt[] = [
-  { x: -1.05, y: 0.26 },
-  { x: -1.86, y: 0.24 },
-  { x: -1.92, y: -0.12 },
-  { x: -1.72, y: -0.14 },
-  { x: -1.7, y: 0.06 },
-  { x: -1.3, y: 0.08 },
-  { x: -1.3, y: -0.5 },
-  { x: -1.52, y: -0.52 },
-  { x: -1.5, y: -0.72 },
-  { x: -1.05, y: -0.7 },
+  { x: -0.95, y: 0.14 },
+  { x: -1.5, y: 0.16 },
+  { x: -1.56, y: -0.04 },
+  { x: -1.36, y: -0.06 },
+  { x: -1.34, y: -0.38 },
+  { x: -1.54, y: -0.4 },
+  { x: -1.5, y: -0.6 },
+  { x: -0.95, y: -0.58 },
 ]
 
-/** Angled foregrip, below the barrel line and ahead of the magazine well. */
-export const FOREGRIP_OUTLINE: readonly Pt[] = [
-  { x: 0.72, y: -0.2 },
-  { x: 0.98, y: -0.2 },
-  { x: 1.12, y: -0.78 },
-  { x: 0.9, y: -0.84 },
-]
-
-export const EXTRUDE_DEPTH = 0.54
+export const EXTRUDE_DEPTH = 0.5
 export const HALF_DEPTH = EXTRUDE_DEPTH / 2
 
 export const BEVEL = {
@@ -108,4 +100,14 @@ export const BEVEL = {
   bevelSize: 0.012,
   bevelOffset: 0,
   bevelSegments: 2,
+} as const
+
+/** Picatinny-style rail teeth along the top of the slide. */
+export const RAIL = {
+  from: -0.42,
+  to: 0.86,
+  teeth: 13,
+  toothWidth: 0.045,
+  height: 0.05,
+  width: 0.17,
 } as const

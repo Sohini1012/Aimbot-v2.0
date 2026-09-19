@@ -14,6 +14,8 @@ export interface ScrollState {
   beatProgress: number
   /** Index into WALK_ORDER during beat 4, else -1. */
   walkIndex: number
+  /** 0-1 within the current component's slice of beat 4. */
+  walkSlotProgress: number
 }
 
 export const scrollState: ScrollState = {
@@ -21,6 +23,7 @@ export const scrollState: ScrollState = {
   beat: 0,
   beatProgress: 0,
   walkIndex: -1,
+  walkSlotProgress: 0,
 }
 
 /** §8 beat boundaries as fractions of the pinned scroll distance. */
@@ -51,8 +54,13 @@ export function setProgress(p: number, walkCount: number): void {
   const { beat, beatProgress } = beatAt(clamped)
   scrollState.beat = beat
   scrollState.beatProgress = beatProgress
+  // Each component owns an equal slice of beat 4. The index changes at the
+  // slice boundary and then holds, so the camera settles on a part and stays
+  // there rather than drifting continuously toward the next one.
   scrollState.walkIndex =
     beat === 4 ? Math.min(walkCount - 1, Math.floor(beatProgress * walkCount)) : -1
+  scrollState.walkSlotProgress =
+    beat === 4 ? (beatProgress * walkCount) % 1 : 0
 }
 
 /**
@@ -79,4 +87,10 @@ export function setRegionProgress(
 ): void {
   const { from, to } = REGIONS[region]
   setProgress(from + Math.min(1, Math.max(0, local)) * (to - from), walkCount)
+}
+
+// Dev-only handle so the beat state can be inspected from the console while
+// tuning the timeline. Stripped from production builds by the DEV guard.
+if (import.meta.env.DEV) {
+  ;(globalThis as unknown as { __scrollState?: typeof scrollState }).__scrollState = scrollState
 }

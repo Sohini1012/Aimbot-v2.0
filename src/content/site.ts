@@ -4,6 +4,7 @@ export const SECTIONS: readonly SectionMeta[] = [
   { id: 'hero', numeral: '00', title: 'AIMBOT v2.0' },
   { id: 'problem', numeral: '01', title: 'The Problem' },
   { id: 'inside', numeral: '02', title: 'Inside the Shell' },
+  { id: 'parts', numeral: '02b', title: 'Parts' },
   { id: 'firmware', numeral: '03', title: 'Firmware' },
   { id: 'game', numeral: '04', title: 'The Game' },
   { id: 'build', numeral: '05', title: 'Build Log' },

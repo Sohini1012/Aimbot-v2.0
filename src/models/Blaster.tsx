@@ -2,13 +2,13 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Center } from '@react-three/drei'
 import { Vector3, type Group } from 'three'
-import { ShellHalf, Trigger } from './Shell'
+import { ShellHalf, Trigger, Foregrip } from './Shell'
 import { Barrel } from './Barrel'
 import { Stock } from './Stock'
 import { Mag } from './Mag'
 import { Internals, type InternalRefs } from './Internals'
 import { placementOf } from './placement'
-import { EXPLODE, partProgress, backOut, scatterOffset } from '@/scene/explodeMap'
+import { EXPLODE, partProgress, backOut, scatterOffset, plateau } from '@/scene/explodeMap'
 import { scrollState } from '@/scene/scrollState'
 import type { PartId } from '@/content/types'
 
@@ -31,9 +31,9 @@ import type { PartId } from '@/content/types'
 function explodeAmount(): number {
   const { beat, beatProgress } = scrollState
   if (beat < 3) return 0
-  if (beat === 3) return beatProgress
+  if (beat === 3) return plateau(beatProgress, 0.68)
   if (beat === 4 || beat === 5) return 1
-  if (beat === 6) return 1 - beatProgress
+  if (beat === 6) return 1 - plateau(beatProgress, 0.72)
   return 0
 }
 
@@ -44,7 +44,7 @@ function explodeAmount(): number {
 function scatterAmount(): number {
   const { beat, beatProgress } = scrollState
   if (beat === 0) return 1
-  if (beat === 1) return 1 - backOut(beatProgress)
+  if (beat === 1) return 1 - backOut(plateau(beatProgress, 0.75))
   return 0
 }
 
@@ -124,6 +124,7 @@ export function Blaster({ simplified = false }: { simplified?: boolean }) {
       </group>
 
       <Trigger />
+      <Foregrip />
 
       <group ref={barrel}>
         <Barrel />

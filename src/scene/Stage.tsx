@@ -1,5 +1,5 @@
 import { Suspense, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Perf } from 'r3f-perf'
 import type { Group } from 'three'
 import { Lighting } from './Lighting'
@@ -8,18 +8,43 @@ import { Blaster } from '@/models/Blaster'
 import { CameraRig } from './CameraRig'
 import { WalkLight } from './WalkLight'
 import { SignalPath } from './SignalPath'
+import { LabelProjector } from './LabelProjector'
+import { HeroGhost } from './HeroGhost'
+import { LabelOverlay } from '@/components/LabelOverlay'
 import { Arena } from '@/game/Arena'
 import type { AimTrainer } from '@/game/useAimTrainer'
+
+/** Dev-only: surfaces renderer stats so the scene can be verified without
+ *  relying on screenshots. Stripped from production by the DEV guard. */
+function RenderProbe() {
+  const { gl, scene } = useThree()
+  useFrame(() => {
+    ;(globalThis as unknown as { __r3f?: unknown }).__r3f = {
+      calls: gl.info.render.calls,
+      triangles: gl.info.render.triangles,
+      children: scene.children.length,
+    }
+  })
+  return null
+}
 
 /** Rotates the assembled model through the orbit and explode beats. */
 function BlasterRig({ simplified }: { simplified: boolean }) {
   const ref = useRef<Group>(null)
+  const spin = useRef(-0.5)
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const g = ref.current
     if (!g) return
-    // §8 beat 3 calls for 40 degrees of rotation across the explode
-    g.rotation.y = -0.5 + scrollState.progress * 1.4
+
+    // A slow idle turn through the orbit beat, then the 40 degrees beat 3
+    // asks for across the explode. Damped rather than written straight from
+    // scroll, so a flicked scroll wheel does not snap the model round.
+    const base = -0.5 + scrollState.progress * 1.4
+    const idle = scrollState.beat === 2 ? performance.now() / 9000 : 0
+    const wanted = base + idle
+    spin.current += (wanted - spin.current) * (1 - Math.pow(0.02, delta))
+    g.rotation.y = spin.current
   })
 
   return (
@@ -44,6 +69,7 @@ function SceneSwitch({ trainer, simplified }: { trainer: AimTrainer; simplified:
   return (
     <>
       <group ref={blasterRef}>
+        <HeroGhost />
         <BlasterRig simplified={simplified} />
         <SignalPath />
       </group>
@@ -59,12 +85,28 @@ interface Props {
   ariaLabel: string
   reducedMotion: boolean
   simplified: boolean
+  /** Hidden outside the 3D regions, so paper sections get the full width. */
+  visible: boolean
   trainer: AimTrainer
 }
 
-export function Stage({ ariaLabel, reducedMotion, simplified, trainer }: Props) {
+export function Stage({ ariaLabel, reducedMotion, simplified, visible, trainer }: Props) {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0" role="img" aria-label={ariaLabel}>
+    /**
+     * The stage owns its own column rather than sitting behind the whole page.
+     *
+     * A full-bleed fixed canvas means every text panel is drawn on top of the
+     * model — which is exactly the overlap this layout exists to prevent. The
+     * panel takes the right 56% on desktop and the top 46vh on narrow screens;
+     * the copy lives in the space left over and the two never share pixels.
+     */
+    <div
+      className={`pointer-events-none fixed z-0 transition-opacity duration-500 ease-[var(--ease-ui)] top-[52px] right-0 left-0 h-[46vh] lg:top-0 lg:left-auto lg:h-screen lg:w-[50vw] xl:w-[54vw] ${
+        visible ? 'opacity-100' : 'opacity-0'
+      }`}
+      role="img"
+      aria-label={ariaLabel}
+    >
       <Canvas
         shadows={!reducedMotion && !simplified}
         dpr={simplified ? [1, 1.5] : [1, 2]}
@@ -77,9 +119,14 @@ export function Stage({ ariaLabel, reducedMotion, simplified, trainer }: Props) 
           <WalkLight />
           <CameraRig reduced={reducedMotion} simplified={simplified} />
           <SceneSwitch trainer={trainer} simplified={simplified} />
+          <LabelProjector />
+          {import.meta.env.DEV && <RenderProbe />}
         </Suspense>
         {import.meta.env.DEV && <Perf position="bottom-left" />}
       </Canvas>
+
+      {/* leader lines and part names, drawn over the canvas inside the panel */}
+      <LabelOverlay />
     </div>
   )
 }

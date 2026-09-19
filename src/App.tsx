@@ -4,6 +4,7 @@ import { Nav } from './components/Nav'
 import { Hero } from './components/sections/Hero'
 import { Problem } from './components/sections/Problem'
 import { Inside } from './components/sections/Inside'
+import { ComponentList } from './components/sections/ComponentList'
 import { Firmware } from './components/sections/Firmware'
 import { GameSectionView } from './components/sections/GameSectionView'
 import { BuildLog } from './components/sections/BuildLog'
@@ -12,6 +13,7 @@ import { Footer } from './components/sections/Footer'
 import { useLenis } from './hooks/useLenis'
 import { useReducedMotion } from './hooks/useReducedMotion'
 import { useSimplified } from './hooks/useSimplified'
+import { useStageVisible } from './hooks/useStageVisible'
 import { useScrollBeat } from './hooks/useScrollBeat'
 import { scrollState } from './scene/scrollState'
 import { useAimTrainer } from './game/useAimTrainer'
@@ -50,6 +52,7 @@ export function App() {
   const lastBeat = useRef(-1)
 
   const trainer = useAimTrainer(true, !reduced)
+  const stageVisible = useStageVisible([heroRegion, insideRegion, gameRegion])
 
   useLenis(!reduced)
 
@@ -94,14 +97,21 @@ export function App() {
           ariaLabel={beatLabel}
           reducedMotion={reduced}
           simplified={simplified}
+          visible={stageVisible}
           trainer={trainer}
         />
       </Suspense>
 
       <main className="relative z-10">
-        {/* Beats 0-2 — the canvas shows through behind the hero copy. */}
-        <div ref={heroRegion} className="relative" style={{ height: '220vh' }}>
-          <div className="sticky top-0">
+        {/* Beats 0-2. `lg:pr-[56vw]` reserves the stage column, so the copy
+            can never run underneath the model. On narrow screens the stage
+            takes the top 46vh and the padding moves to the top instead. */}
+        <div
+          ref={heroRegion}
+          className="relative bg-noir pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
+          style={{ height: '320vh' }}
+        >
+          <div className="sticky top-[52px] lg:top-0">
             <Hero />
           </div>
         </div>
@@ -109,14 +119,27 @@ export function App() {
         <Problem />
 
         {/* Beats 3-6 — explode, component walk, signal path, reassemble. */}
-        <div ref={insideRegion} className="relative">
+        {/* Tall on purpose: beats 3-6 cover the explode, seven component
+            flights, the signal path and the reassemble. Cramming that into a
+            screen or two is what made everything land on top of itself. */}
+        <div
+          ref={insideRegion}
+          className="relative bg-noir pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
+          style={{ minHeight: '900vh' }}
+        >
           <Inside />
         </div>
+
+        <ComponentList />
 
         <Firmware />
 
         {/* Beats 7-8 — muzzle dive into the arena. */}
-        <div ref={gameRegion} className="relative">
+        <div
+          ref={gameRegion}
+          className="relative bg-noir pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
+          style={{ minHeight: '260vh' }}
+        >
           <GameSectionView trainer={trainer} />
         </div>
 
