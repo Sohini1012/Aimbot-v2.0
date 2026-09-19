@@ -6,6 +6,7 @@ import {
   buildShape,
   HALF_DEPTH,
   BEVEL,
+  BEVEL_FINE,
   RAIL,
 } from './profiles'
 import { shellMaterial, shellAccentMaterial, shellTrimMaterial, metalMaterial } from './materials'
@@ -21,12 +22,12 @@ import { mm } from './scale'
  */
 export const ShellHalf = forwardRef<Group, { side: 1 | -1 }>(function ShellHalf({ side }, ref) {
   const bodyGeo = useMemo(
-    () => new ExtrudeGeometry(buildShape(BODY_OUTLINE), { depth: HALF_DEPTH, ...BEVEL }),
+    () => new ExtrudeGeometry(buildShape(BODY_OUTLINE), { depth: HALF_DEPTH * 0.55, ...BEVEL }),
     [],
   )
 
   const slideGeo = useMemo(
-    () => new ExtrudeGeometry(buildShape(SLIDE_OUTLINE), { depth: HALF_DEPTH * 0.86, ...BEVEL }),
+    () => new ExtrudeGeometry(buildShape(SLIDE_OUTLINE), { depth: HALF_DEPTH * 0.5, ...BEVEL_FINE }),
     [],
   )
 

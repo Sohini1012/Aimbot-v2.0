@@ -17,9 +17,9 @@ import type { AimTrainer } from '@/game/useAimTrainer'
 /** Dev-only: surfaces renderer stats and the camera so the scene can be
  *  verified without relying on screenshots. Stripped from production. */
 function RenderProbe() {
-  const { gl, camera } = useThree()
+  const { gl, camera, scene } = useThree()
   useFrame(() => {
-    ;(globalThis as unknown as { __r3f?: unknown }).__r3f = {
+    ;(globalThis as unknown as { __r3f?: unknown; __scene?: unknown }).__r3f = {
       calls: gl.info.render.calls,
       triangles: gl.info.render.triangles,
       cam: [
@@ -28,6 +28,7 @@ function RenderProbe() {
         Number(camera.position.z.toFixed(2)),
       ],
     }
+    ;(globalThis as unknown as { __scene?: unknown }).__scene = scene
   })
   return null
 }

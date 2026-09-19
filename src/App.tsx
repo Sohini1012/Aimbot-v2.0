@@ -28,18 +28,26 @@ import { useAimTrainer } from './game/useAimTrainer'
 const Stage = lazy(() => import('./scene/Stage').then((m) => ({ default: m.Stage })))
 
 /**
- * Dark ground for a 3D region, stopping short of the stage column.
+ * Dark ground behind the copy columns, complementing the stage.
  *
- * The region itself must not carry the background. `pr-[51vw]` is padding, so
- * the element still spans the full viewport — painting bg-noir on it covered
- * the whole width at z-10 and hid the canvas at z-0 completely. The 3D was
- * rendering the whole time, behind an opaque rectangle.
+ * This has to be `fixed`, not `absolute`. The stage is fixed to the viewport;
+ * an absolute ground is positioned against its 320vh-tall region, so
+ * `top-[46vh]` exempts the first 374px *of the region* — which after a screen
+ * of scrolling is nowhere near the band the stage actually occupies. The two
+ * cannot be reconciled with offsets because they are measured against
+ * different boxes.
+ *
+ * One fixed element, shown exactly while a 3D region is on screen, occupying
+ * the complement of the stage: everything below it on narrow screens,
+ * everything left of it on desktop.
  */
-function RegionGround() {
+function StageGround({ visible }: { visible: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 bg-noir lg:right-[51vw] xl:right-[55vw]"
+      className={`pointer-events-none fixed right-0 bottom-0 left-0 top-[calc(52px+46vh)] -z-10 bg-noir transition-opacity duration-500 lg:top-0 lg:right-[51vw] xl:right-[55vw] ${
+        visible ? 'opacity-100' : 'opacity-0'
+      }`}
     />
   )
 }
@@ -109,6 +117,8 @@ export function App() {
 
       <Nav />
 
+      <StageGround visible={stageVisible} />
+
       <Suspense fallback={null}>
         <Stage
           ariaLabel={beatLabel}
@@ -128,8 +138,10 @@ export function App() {
           className="relative pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
           style={{ height: '320vh' }}
         >
-          <RegionGround />
-          <div className="relative sticky top-[52px] lg:top-0">
+          {/* On narrow screens the stage is a fixed band across the top, so
+              the sticky hero has to start below it or the copy is drawn over
+              the model — the same overlap this layout exists to prevent. */}
+          <div className="relative sticky top-[48vh] lg:top-0">
             <Hero />
           </div>
         </div>
@@ -145,7 +157,6 @@ export function App() {
           className="relative pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
           style={{ height: '900vh' }}
         >
-          <RegionGround />
           <Inside />
         </div>
 
@@ -159,7 +170,6 @@ export function App() {
           className="relative pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
           style={{ height: '260vh' }}
         >
-          <RegionGround />
           <GameSectionView trainer={trainer} />
         </div>
 

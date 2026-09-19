@@ -102,12 +102,36 @@ export const STOCK_OUTLINE: readonly Pt[] = [
 export const EXTRUDE_DEPTH = 0.5
 export const HALF_DEPTH = EXTRUDE_DEPTH / 2
 
+/**
+ * Edge rounding — the "pillow".
+ *
+ * A flat extrusion is a slab: constant thickness, knife edges, no shape across
+ * its own width. Real moulded ABS is crowned — the face bulges slightly and
+ * rolls over into the edge, and that roll is where every highlight lives.
+ *
+ * A big bevelThickness with a matching NEGATIVE bevelOffset produces exactly
+ * that: the edge rounds over deeply, but because the offset pulls the bevel
+ * inward the traced outline is preserved instead of being inflated. (Growing
+ * it outward with a positive offset is what fattened the blaster on the first
+ * attempt at this.)
+ *
+ * bevelSegments is what makes the roll read as a curve rather than a chamfer.
+ */
 export const BEVEL = {
   bevelEnabled: true,
-  bevelThickness: 0.012,
-  bevelSize: 0.012,
-  bevelOffset: 0,
-  bevelSegments: 2,
+  bevelThickness: 0.055,
+  bevelSize: 0.038,
+  bevelOffset: -0.038,
+  bevelSegments: 6,
+} as const
+
+/** Shallower crown for small parts, where the full radius would eat them. */
+export const BEVEL_FINE = {
+  bevelEnabled: true,
+  bevelThickness: 0.018,
+  bevelSize: 0.014,
+  bevelOffset: -0.014,
+  bevelSegments: 4,
 } as const
 
 /** Picatinny-style rail teeth along the top of the slide. */
