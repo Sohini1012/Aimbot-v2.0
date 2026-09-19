@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+
 import {
   ExtrudeGeometry,
   EdgesGeometry,
@@ -12,6 +12,7 @@ import {
 } from 'three'
 import { BODY_OUTLINE, SLIDE_OUTLINE, buildShape, HALF_DEPTH, BEVEL } from '@/models/profiles'
 import { scrollState } from './scrollState'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 const ghostMaterial = new LineBasicMaterial({
   color: new Color('#f5a623'),
@@ -60,7 +61,7 @@ export function HeroGhost() {
     [],
   )
 
-  useFrame((_, delta) => {
+  useSafeFrame('hero-ghost', (_, delta) => {
     // present through beat 0, gone by the time beat 1 finishes assembling
     let wanted = 0
     if (scrollState.beat === 0) wanted = 1

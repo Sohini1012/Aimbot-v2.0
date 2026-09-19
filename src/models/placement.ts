@@ -38,6 +38,10 @@ export const PLACEMENT: Partial<Record<PartId, Placement>> = {
 
   // "out of the grip base"
   usb: { position: [-0.86, -0.99, 0], rotation: [0, 0, 0.5] },
+
+  // The harness has no placement of its own — every run is derived from the
+  // parts it connects. This anchor exists so the label has somewhere to point.
+  wires: { position: [-0.1, -0.06, 0.06], rotation: [0, 0, 0] },
 }
 
 /**
@@ -61,8 +65,25 @@ export const BUTTON_CLUSTERS = [
   },
 ] as const
 
+const ORIGIN: Placement = { position: [0, 0, 0] }
+const warned = new Set<string>()
+
+/**
+ * Never throws.
+ *
+ * This is called from inside useFrame. An exception there does not surface as
+ * one bad label — it tears down the render loop and the canvas goes black,
+ * which is exactly what a missing "wires" entry did. A missing placement is a
+ * mistake worth shouting about in development, but it must degrade to the
+ * origin rather than take the whole scene with it.
+ */
 export function placementOf(id: PartId): Placement {
   const p = PLACEMENT[id]
-  if (!p) throw new Error(`No placement defined for part "${id}"`)
-  return p
+  if (p) return p
+
+  if (import.meta.env.DEV && !warned.has(id)) {
+    warned.add(id)
+    console.warn(`[placement] no entry for part "${id}" — falling back to origin`)
+  }
+  return ORIGIN
 }

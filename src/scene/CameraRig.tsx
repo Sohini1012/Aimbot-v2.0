@@ -1,10 +1,12 @@
 import { useRef } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
+import {useThree} from '@react-three/fiber'
+
 import { Vector3 } from 'three'
 import { scrollState } from './scrollState'
 import { WALK_ORDER } from '@/content/hardware'
 import { EXPLODE } from './explodeMap'
 import { placementOf } from '@/models/placement'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 /**
  * §8 — the camera per beat.
@@ -27,7 +29,7 @@ export function CameraRig({ reduced, simplified = false }: { reduced: boolean; s
   const { camera } = useThree()
   const initialised = useRef(false)
 
-  useFrame((_, delta) => {
+  useSafeFrame('camera', (_, delta) => {
     const { beat, beatProgress, walkIndex } = scrollState
 
     // defaults: the 3/4 hero framing

@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+
 import { Center } from '@react-three/drei'
 import { Vector3, type Group } from 'three'
 import { ShellHalf, Trigger, Foregrip } from './Shell'
@@ -11,6 +11,7 @@ import { placementOf } from './placement'
 import { EXPLODE, partProgress, backOut, scatterOffset, plateau } from '@/scene/explodeMap'
 import { scrollState } from '@/scene/scrollState'
 import type { PartId } from '@/content/types'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 /**
  * §8 beats 3 and 6.
@@ -69,7 +70,7 @@ export function Blaster({ simplified = false }: { simplified?: boolean }) {
     usb: useRef<Group>(null),
   }
 
-  useFrame(() => {
+  useSafeFrame('blaster', () => {
     const amount = explodeAmount()
     const scatter = scatterAmount()
 

@@ -14,15 +14,19 @@ import { LabelOverlay } from '@/components/LabelOverlay'
 import { Arena } from '@/game/Arena'
 import type { AimTrainer } from '@/game/useAimTrainer'
 
-/** Dev-only: surfaces renderer stats so the scene can be verified without
- *  relying on screenshots. Stripped from production by the DEV guard. */
+/** Dev-only: surfaces renderer stats and the camera so the scene can be
+ *  verified without relying on screenshots. Stripped from production. */
 function RenderProbe() {
-  const { gl, scene } = useThree()
+  const { gl, camera } = useThree()
   useFrame(() => {
     ;(globalThis as unknown as { __r3f?: unknown }).__r3f = {
       calls: gl.info.render.calls,
       triangles: gl.info.render.triangles,
-      children: scene.children.length,
+      cam: [
+        Number(camera.position.x.toFixed(2)),
+        Number(camera.position.y.toFixed(2)),
+        Number(camera.position.z.toFixed(2)),
+      ],
     }
   })
   return null
@@ -120,8 +124,8 @@ export function Stage({ ariaLabel, reducedMotion, simplified, visible, trainer }
           <CameraRig reduced={reducedMotion} simplified={simplified} />
           <SceneSwitch trainer={trainer} simplified={simplified} />
           <LabelProjector />
-          {import.meta.env.DEV && <RenderProbe />}
         </Suspense>
+        {import.meta.env.DEV && <RenderProbe />}
         {import.meta.env.DEV && <Perf position="bottom-left" />}
       </Canvas>
 

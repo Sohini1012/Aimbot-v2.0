@@ -1,4 +1,5 @@
-import { useFrame, useThree } from '@react-three/fiber'
+import {useThree} from '@react-three/fiber'
+
 import { Vector3 } from 'three'
 import { scrollState } from './scrollState'
 import { EXPLODE } from './explodeMap'
@@ -7,6 +8,7 @@ import { HARDWARE } from '@/content/hardware'
 import { WALK_ORDER } from '@/content/hardware'
 import { labelStore, type ProjectedLabel } from './labelStore'
 import type { PartId } from '@/content/types'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 const SCENE_SCALE = 0.78
 const world = new Vector3()
@@ -35,7 +37,7 @@ const LABELLED: readonly PartId[] = [
 export function LabelProjector() {
   const { camera, size } = useThree()
 
-  useFrame(() => {
+  useSafeFrame('labels', () => {
     // labels belong to the exploded beats only
     const beat = scrollState.beat
     const showing = beat >= 3 && beat <= 6

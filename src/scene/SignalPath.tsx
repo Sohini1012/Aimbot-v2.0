@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+
 import {
   CatmullRomCurve3,
   Vector3,
@@ -12,6 +12,7 @@ import { scrollState } from './scrollState'
 import { EXPLODE } from './explodeMap'
 import { placementOf } from '@/models/placement'
 import type { PartId } from '@/content/types'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 const SCENE_SCALE = 0.78
 const PULSES = 7
@@ -57,7 +58,7 @@ export function SignalPath() {
     return new CatmullRomCurve3([imu, midA, pico, midB, usb], false, 'catmullrom', 0.5)
   }, [])
 
-  useFrame((_, delta) => {
+  useSafeFrame('signal', (_, delta) => {
     const mesh = ref.current
     if (!mesh) return
 

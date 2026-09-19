@@ -1,10 +1,11 @@
 import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+
 import { Vector3, type PointLight } from 'three'
 import { scrollState } from './scrollState'
 import { WALK_ORDER } from '@/content/hardware'
 import { EXPLODE } from './explodeMap'
 import { placementOf } from '@/models/placement'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 const SCENE_SCALE = 0.78
 const target = new Vector3()
@@ -27,7 +28,7 @@ const target = new Vector3()
 export function WalkLight() {
   const ref = useRef<PointLight>(null)
 
-  useFrame((_, delta) => {
+  useSafeFrame('walk-light', (_, delta) => {
     const light = ref.current
     if (!light) return
 

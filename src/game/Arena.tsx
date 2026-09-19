@@ -1,8 +1,9 @@
 import { useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+
 import { Instanced, type InstanceSpec } from '@/models/Instanced'
 import { Object3D, MeshStandardMaterial, Color, type InstancedMesh, type Group } from 'three'
 import type { AimTrainer } from './useAimTrainer'
+import { useSafeFrame } from '@/scene/useSafeFrame'
 
 const targetMaterial = new MeshStandardMaterial({
   color: new Color('#f5a623'),
@@ -49,7 +50,7 @@ export function Arena({ trainer }: { trainer: AimTrainer }) {
     return out
   }, [])
 
-  useFrame(() => {
+  useSafeFrame('arena', () => {
     trainer.step()
 
     const state = trainer.stateRef.current
