@@ -5,6 +5,8 @@ import type { Group } from 'three'
 import { Lighting } from './Lighting'
 import { scrollState } from './scrollState'
 import { Blaster } from '@/models/Blaster'
+import { BlasterGLB } from '@/models/BlasterGLB'
+import { useGlbAvailable } from '@/hooks/useGlbAvailable'
 import { CameraRig } from './CameraRig'
 import { WalkLight } from './WalkLight'
 import { SignalPath } from './SignalPath'
@@ -33,6 +35,17 @@ function RenderProbe() {
   return null
 }
 
+/**
+ * Picks the Blender model when it has been built, and the procedural one when
+ * it has not. Both drive off the same explode map, so the timeline is
+ * indifferent to which is mounted.
+ */
+function BlasterBody({ simplified }: { simplified: boolean }) {
+  const glb = useGlbAvailable()
+  if (glb === null) return null
+  return glb ? <BlasterGLB simplified={simplified} /> : <Blaster simplified={simplified} />
+}
+
 /** Rotates the assembled model through the orbit and explode beats. */
 function BlasterRig({ simplified }: { simplified: boolean }) {
   const ref = useRef<Group>(null)
@@ -55,7 +68,7 @@ function BlasterRig({ simplified }: { simplified: boolean }) {
 
   return (
     <group ref={ref} scale={0.82} position={[0, 0.02, 0]}>
-      <Blaster simplified={simplified} />
+      <BlasterBody simplified={simplified} />
     </group>
   )
 }

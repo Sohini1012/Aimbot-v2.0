@@ -108,3 +108,41 @@ highlight is `--color-amber`, and dark parts sit near `--color-noir`.
 - [Review: Nerf Elite Retaliator — Blaster Hub](https://blasterhub.com/2015/11/review-nerf-elite-retaliator-20m-aussie-grey-trigger/)
 - [Raspberry Pi Pico pinout, datasheet and specifications — Components101](https://components101.com/development-boards/raspberry-pi-pico-pinout-datasheet-specifications)
 - [Pico microcontroller boards — Raspberry Pi Documentation](https://raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html)
+
+---
+
+## Path B — the Blender model
+
+`blender/build_assets.py` generates `public/models/aimbot.glb` headless:
+
+```bash
+blender --background --python blender/build_assets.py
+```
+
+Built with Blender 5.2.2. The outlines live in `blender/outline.py` and match
+`src/models/profiles.ts`, so the GLB and the procedural fallback are the same
+blaster.
+
+**Why the GLB exists.** The browser path extrudes a traced 2D profile, which
+gives a correct silhouette but a slab: constant thickness, no crown across the
+face, and edges that are either knife-sharp or — if the bevel is pushed far
+enough to be visible — thick enough to swallow the profile. No parameter fixes
+that, because the limitation is the representation.
+
+Blender adds three things that path cannot reach:
+
+- curve extrusion with a true bevel radius, so the face crowns and rolls into
+  the edge the way moulded ABS does;
+- a Bevel modifier with an angle limit, which rounds real edges and leaves the
+  intentional creases sharp;
+- weighted normals and auto-smoothing, so a low-poly mesh shades as a moulded
+  surface instead of a faceted one.
+
+**Output:** 20 separately named objects, 21,800 triangles, 0.67 MB — well
+inside the 4 MB budget, so no Draco pass is needed and the app avoids shipping
+a decoder.
+
+**Fallback:** `useGlbAvailable` HEAD-checks the file before anything mounts,
+because `useGLTF` suspends forever on a missing model. Without the model the
+procedural blaster renders instead, so a checkout that has never run Blender
+still works.
