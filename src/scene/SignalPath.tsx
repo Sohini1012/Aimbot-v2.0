@@ -14,7 +14,7 @@ import { placementOf } from '@/models/placement'
 import type { PartId } from '@/content/types'
 import { useSafeFrame } from '@/scene/useSafeFrame'
 
-const SCENE_SCALE = 0.78
+const SCENE_SCALE = 0.82
 const PULSES = 7
 
 const pulseMaterial = new MeshBasicMaterial({

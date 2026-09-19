@@ -1,6 +1,7 @@
 import { INSIDE } from '@/content/site'
 import { HARDWARE, WALK_ORDER } from '@/content/hardware'
 import { SectionHeading } from '../SectionHeading'
+import { Bullets } from '../Bullets'
 import { useWalkPart } from '@/hooks/useWalkPart'
 
 /**
@@ -20,18 +21,15 @@ export function Inside() {
   const active = walk.id ? walkParts.find((p) => p.id === walk.id) : null
 
   return (
-    <section id="inside" className="relative px-5 sm:px-8">
+    <section id="inside" className="relative flex h-full flex-col px-5 sm:px-8">
       <div className="max-w-[620px] py-20 lg:py-28 lg:pl-12">
         <SectionHeading numeral={INSIDE.numeral} title={INSIDE.title} tone="noir" />
-        {INSIDE.body.map((p) => (
-          <p key={p.slice(0, 32)} className="mb-5 text-grey-1">
-            {p}
-          </p>
-        ))}
+        <p className="mb-6 text-lg text-paper">{INSIDE.lead}</p>
+        <Bullets points={INSIDE.points} tone="noir" />
       </div>
 
       {/* The walk. Sticky, so the card stays put while the camera moves. */}
-      <div className="sticky top-[52vh] z-10 max-w-[620px] pb-20 lg:top-[28vh] lg:pl-12">
+      <div className="sticky top-[54vh] z-10 max-w-[620px] lg:top-[26vh] lg:pl-12">
         <div
           className="min-h-[220px] rounded-card-lg border border-[var(--hairline-dark)] bg-[color-mix(in_srgb,var(--color-panel)_92%,transparent)] p-6 backdrop-blur-sm transition-opacity duration-300"
           style={{ opacity: active ? 1 : 0.25 }}

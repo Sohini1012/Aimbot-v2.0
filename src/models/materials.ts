@@ -15,30 +15,49 @@ export const TOKEN = {
   line: '#e6e4dd',
 } as const
 
-/** Nerf shell: white, roughness 0.55, a little clearcoat (§6). */
+/**
+ * Nerf shell.
+ *
+ * Injection-moulded ABS is not flat white: it has a slightly waxy sheen, it
+ * picks up colour from whatever is around it, and its edges catch light far
+ * more than its faces. A plain white matte material reads as untextured
+ * polystyrene, which is what made the first pass look like a placeholder.
+ *
+ * sheen adds the soft off-angle falloff, clearcoat gives the moulded gloss,
+ * and a slightly warm base stops it going blue under the cool fill.
+ */
 export const shellMaterial = new MeshPhysicalMaterial({
-  color: new Color(TOKEN.paper),
-  roughness: 0.55,
+  color: new Color('#eceae4'),
+  roughness: 0.42,
   metalness: 0.0,
-  clearcoat: 0.15,
-  clearcoatRoughness: 0.4,
+  clearcoat: 0.45,
+  clearcoatRoughness: 0.28,
+  sheen: 0.4,
+  sheenRoughness: 0.6,
+  sheenColor: new Color('#ffffff'),
+  envMapIntensity: 1.1,
 })
 
 /** Grey/dark-grey accents on the blaster. */
 export const shellAccentMaterial = new MeshPhysicalMaterial({
-  color: new Color(TOKEN.noirSoft),
-  roughness: 0.6,
-  metalness: 0.05,
-  clearcoat: 0.1,
+  color: new Color('#33333a'),
+  roughness: 0.45,
+  metalness: 0.08,
+  clearcoat: 0.3,
+  clearcoatRoughness: 0.35,
+  envMapIntensity: 1.0,
 })
 
 /** Orange trim — trigger, priming grip, muzzle. The blaster's own accent
  *  happens to sit close to our amber token, which is convenient. */
 export const shellTrimMaterial = new MeshPhysicalMaterial({
-  color: new Color(TOKEN.amberDeep),
-  roughness: 0.5,
+  color: new Color('#e8890f'),
+  roughness: 0.38,
   metalness: 0.0,
-  clearcoat: 0.2,
+  clearcoat: 0.45,
+  clearcoatRoughness: 0.25,
+  sheen: 0.25,
+  envMapIntensity: 1.15,
 })
 
 /** PCB substrate: roughness 0.7, emissive amber trace accent (§6). */
@@ -66,9 +85,10 @@ export const perfboardMaterial = new MeshStandardMaterial({
 
 /** Metal: metalness 0.9, roughness 0.25 (§6). */
 export const metalMaterial = new MeshStandardMaterial({
-  color: new Color(TOKEN.grey1),
-  roughness: 0.25,
-  metalness: 0.9,
+  color: new Color('#b9b9c2'),
+  roughness: 0.22,
+  metalness: 0.95,
+  envMapIntensity: 1.4,
 })
 
 /** Black plastic — button plungers, joystick cap, connector shells. */

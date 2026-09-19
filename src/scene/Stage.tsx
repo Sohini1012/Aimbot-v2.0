@@ -41,10 +41,11 @@ function BlasterRig({ simplified }: { simplified: boolean }) {
     const g = ref.current
     if (!g) return
 
-    // A slow idle turn through the orbit beat, then the 40 degrees beat 3
-    // asks for across the explode. Damped rather than written straight from
-    // scroll, so a flicked scroll wheel does not snap the model round.
-    const base = -0.5 + scrollState.progress * 1.4
+    // Three-quarter view with the muzzle toward the viewer — a blaster read
+    // end-on is just a rectangle, and the silhouette is the whole point.
+    // Damped rather than written straight from scroll, so a flicked wheel does
+    // not snap the model round.
+    const base = 0.62 - scrollState.progress * 1.05
     const idle = scrollState.beat === 2 ? performance.now() / 9000 : 0
     const wanted = base + idle
     spin.current += (wanted - spin.current) * (1 - Math.pow(0.02, delta))
@@ -52,7 +53,7 @@ function BlasterRig({ simplified }: { simplified: boolean }) {
   })
 
   return (
-    <group ref={ref} scale={0.78} position={[0, -0.1, 0]}>
+    <group ref={ref} scale={0.82} position={[0, 0.02, 0]}>
       <Blaster simplified={simplified} />
     </group>
   )

@@ -7,7 +7,7 @@ import { EXPLODE } from './explodeMap'
 import { placementOf } from '@/models/placement'
 import { useSafeFrame } from '@/scene/useSafeFrame'
 
-const SCENE_SCALE = 0.78
+const SCENE_SCALE = 0.82
 const target = new Vector3()
 
 /**

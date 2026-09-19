@@ -27,6 +27,23 @@ import { useAimTrainer } from './game/useAimTrainer'
  */
 const Stage = lazy(() => import('./scene/Stage').then((m) => ({ default: m.Stage })))
 
+/**
+ * Dark ground for a 3D region, stopping short of the stage column.
+ *
+ * The region itself must not carry the background. `pr-[51vw]` is padding, so
+ * the element still spans the full viewport — painting bg-noir on it covered
+ * the whole width at z-10 and hid the canvas at z-0 completely. The 3D was
+ * rendering the whole time, behind an opaque rectangle.
+ */
+function RegionGround() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 bg-noir lg:right-[51vw] xl:right-[55vw]"
+    />
+  )
+}
+
 /** §12 — the canvas description, updated per beat so a screen reader is told
  *  what is on screen rather than being handed an unchanging label. */
 const BEAT_LABELS: readonly string[] = [
@@ -108,10 +125,11 @@ export function App() {
             takes the top 46vh and the padding moves to the top instead. */}
         <div
           ref={heroRegion}
-          className="relative bg-noir pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
+          className="relative pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
           style={{ height: '320vh' }}
         >
-          <div className="sticky top-[52px] lg:top-0">
+          <RegionGround />
+          <div className="relative sticky top-[52px] lg:top-0">
             <Hero />
           </div>
         </div>
@@ -124,9 +142,10 @@ export function App() {
             screen or two is what made everything land on top of itself. */}
         <div
           ref={insideRegion}
-          className="relative bg-noir pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
-          style={{ minHeight: '900vh' }}
+          className="relative pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
+          style={{ height: '900vh' }}
         >
+          <RegionGround />
           <Inside />
         </div>
 
@@ -137,9 +156,10 @@ export function App() {
         {/* Beats 7-8 — muzzle dive into the arena. */}
         <div
           ref={gameRegion}
-          className="relative bg-noir pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
-          style={{ minHeight: '260vh' }}
+          className="relative pt-[48vh] lg:pt-0 lg:pr-[51vw] xl:pr-[55vw]"
+          style={{ height: '260vh' }}
         >
+          <RegionGround />
           <GameSectionView trainer={trainer} />
         </div>
 

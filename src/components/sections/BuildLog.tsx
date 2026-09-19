@@ -15,11 +15,7 @@ export function BuildLog() {
 
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            {BUILD_LOG.body.map((p) => (
-              <p key={p.slice(0, 24)} className="mb-5 text-muted">
-                {p}
-              </p>
-            ))}
+            <p className="mb-5 text-lg text-ink">{BUILD_LOG.lead}</p>
 
             <div className="rounded-card-lg border border-[var(--color-line-strong)] bg-[var(--amber-10)] p-5">
               <p className="text-sm text-muted">{BUILD_LOG.eWasteNote}</p>

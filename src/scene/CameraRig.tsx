@@ -20,7 +20,7 @@ import { useSafeFrame } from '@/scene/useSafeFrame'
  * map says rather than needing its own hand-tuned waypoint per part.
  */
 
-const SCENE_SCALE = 0.78
+const SCENE_SCALE = 0.82
 const target = new Vector3()
 const lookTarget = new Vector3()
 const currentLook = new Vector3()
@@ -43,17 +43,21 @@ export function CameraRig({ reduced, simplified = false }: { reduced: boolean; s
     if (beat <= 1) {
       // push in from 3/4 rear to 3/4 front across the materialise
       const t = beat === 0 ? 0 : beatProgress
-      px = -2.2 + t * 2.2
-      py = 1.1 - t * 0.5
-      pz = 4.2 + t * 1.3
+      px = -1.9 + t * 1.9
+      py = 1.0 - t * 0.7
+      pz = 3.8 + t * 0.9
     } else if (beat === 2) {
-      pz = 5.2
-      py = 0.5
+      // Hero framing. The stage column is narrower than it is tall, so the
+      // limit is horizontal: the blaster is ~3.5 units long and has to sit
+      // inside that width with the stock and muzzle both clear of the edges.
+      pz = 6.1
+      py = 0.3
+      ly = 0.0
     } else if (beat === 3) {
       // pull back and rotate as everything separates
-      pz = 5.2 + beatProgress * 2.4
-      py = 0.5 + beatProgress * 0.9
-      px = beatProgress * 1.6
+      pz = 6.1 + beatProgress * 2.3
+      py = 0.3 + beatProgress * 1.0
+      px = beatProgress * 1.7
     } else if (beat === 4) {
       // §11 — the simplified path holds one framed shot of the exploded view
       // instead of flying between components. The flights are the most
@@ -71,10 +75,12 @@ export function CameraRig({ reduced, simplified = false }: { reduced: boolean; s
         ly = (place[1] + spec.offset[1]) * SCENE_SCALE - 0.1
         lz = (place[2] + spec.offset[2]) * SCENE_SCALE
 
-        // sit off to one side of the part so the card beside it is not covered
-        px = lx + 0.9
-        py = ly + 0.45
-        pz = lz + 1.5
+        // Sit back far enough that the part is seen in context rather than
+        // filling the frame — a 5 mm component at arm's length is an
+        // unreadable abstraction.
+        px = lx + 1.15
+        py = ly + 0.5
+        pz = lz + 2.1
       }
     } else if (beat === 5) {
       // hold wide for the signal path
@@ -84,9 +90,9 @@ export function CameraRig({ reduced, simplified = false }: { reduced: boolean; s
     } else if (beat === 6) {
       // converge back to the orbit framing as it reassembles
       const t = 1 - beatProgress
-      pz = 5.2 + t * 2.4
-      py = 0.5 + t * 0.9
-      px = t * 1.6
+      pz = 6.1 + t * 2.3
+      py = 0.3 + t * 1.0
+      px = t * 1.7
     } else if (beat === 7) {
       // travel along the barrel and dive through the muzzle
       const t = beatProgress

@@ -14,7 +14,7 @@ export const SECTIONS: readonly SectionMeta[] = [
 export const HERO = {
   eyebrow: 'DSU DEVHACK 3.0 / OPEN INNOVATION',
   title: 'AIMBOT v2.0',
-  pitch: 'An adaptive inertial controller built from e-waste, aimed at gamers whose hands do not hold still.',
+  pitch: 'Aim with your arm, not your wrist. Built from e-waste, for hands that shake.',
   scrollCue: 'SCROLL',
 } as const
 
@@ -29,11 +29,13 @@ export const STATS = [
 
 export const PROBLEM = {
   numeral: '01',
-  title: 'Aiming is a fine-motor task, and not every hand can do it',
-  body: [
-    'A mouse asks for sub-millimetre precision from the small muscles of the hand and wrist. For players with essential tremor, cerebral palsy, multiple sclerosis or repetitive strain injury, that is precisely the movement that is hardest to produce and hold.',
-    'Adaptive controllers exist. They are also expensive, regionally scarce, and usually built around movement categories rather than around the specific problem of pointing — the thing a shooter actually asks you to do.',
-    'AIMBOT v2.0 takes the opposite approach. It moves aiming off the wrist and onto the whole arm and shoulder, which are larger, stronger and steadier muscle groups, then filters what remains of the tremor in firmware. The result presents to the computer as an ordinary mouse.',
+  title: 'The wrist is the bottleneck',
+  lead: 'A mouse demands sub-millimetre precision from the smallest muscles you have.',
+  points: [
+    'Tremor, cerebral palsy, MS and RSI all attack exactly that movement.',
+    'Adaptive controllers are costly, scarce in India, and rarely built for pointing.',
+    'AIMBOT moves aiming to the arm and shoulder — bigger, steadier muscles.',
+    'What tremor is left gets filtered in firmware. The OS just sees a mouse.',
   ],
   annotation: 'the wrist is the bottleneck',
 } as const
@@ -41,18 +43,23 @@ export const PROBLEM = {
 export const INSIDE = {
   numeral: '02',
   title: 'Inside the shell',
-  body: [
-    'The body is a Nerf N-Strike Elite Retaliator — a toy, chosen because it already solves the ergonomics. It has a grip, a trigger, a foregrip and a stock, all sized for a human hand and all in the right places.',
-    'Everything inside it was either bought for a few hundred rupees or pulled out of dead electronics. The trigger switch came out of a Logitech mouse that had stopped working.',
+  lead: 'A Nerf Retaliator, because a toy already solved the ergonomics.',
+  points: [
+    'Grip, trigger, foregrip and stock — all sized for a hand, all in the right places.',
+    'Everything inside cost a few hundred rupees, or came out of dead electronics.',
+    'The trigger switch was salvaged from a Logitech mouse that had died.',
   ],
 } as const
 
 export const GAME_SECTION = {
   numeral: '04',
   title: 'The game',
-  body: [
-    'We built an aim trainer for the controller to drive. An aim trainer is the honest way to demonstrate a pointing device: it isolates exactly the thing the hardware claims to improve, and it scores it. No level design, no story, nowhere for a bad input device to hide.',
-    'Targets spawn in the arena, you put the crosshair on them, and it records accuracy, reaction time and streak. What matters here is the toggle: switch the input to a raw simulated IMU signal and the crosshair shakes. Switch the 1 Euro filter on and it steadies — without going sluggish when you flick to the next target.',
+  lead: 'An aim trainer is the honest way to test a pointing device. Nowhere to hide.',
+  points: [
+    'Hit the targets. It scores accuracy, reaction time and streak.',
+    'RAW IMU injects a real tremor signal — watch the crosshair shake.',
+    'FILTERED (1€) steadies it, without going sluggish on fast flicks.',
+    'Hold space to clutch. Arrows aim, Enter fires.',
   ],
   rawLabel: 'RAW IMU',
   filteredLabel: 'FILTERED (1€)',
@@ -64,11 +71,9 @@ export const GAME_SECTION = {
 export const BUILD_LOG = {
   numeral: '05',
   title: 'Build log',
-  body: [
-    'Thirty-six continuous hours at DSU Ramanagara. The shell was opened, the cavity measured, the perfboard cut to fit the space behind the magazine well, and the trigger linkage reworked twice before the Omron sat at the right depth.',
-  ],
+  lead: '36 hours at DSU Ramanagara.',
   eWasteNote:
-    'The Omron micro-switch, the jumper wires and the perfboard came out of dead hardware. Buying the switch new would have cost more than the mouse it came from is now worth.',
+    'The trigger switch came out of a dead mouse. Buying it new would have cost more than that mouse is now worth.',
   timeline: [
     { at: 'H+00', what: 'Shell teardown, cavity measured, part placement decided' },
     { at: 'H+06', what: 'Pico flashed, MPU-9250 talking over I²C, raw quaternion on serial' },

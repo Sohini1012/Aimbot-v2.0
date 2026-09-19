@@ -96,7 +96,7 @@ export function HeroGhost() {
   })
 
   return (
-    <group scale={0.78} position={[0, -0.1, 0]}>
+    <group scale={0.82} position={[0, 0.02, 0]}>
       <lineSegments ref={lines} geometry={edges} material={ghostMaterial} />
       <instancedMesh ref={dust} args={[undefined, undefined, DUST]} material={dustMaterial}>
         <sphereGeometry args={[1, 6, 5]} />

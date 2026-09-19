@@ -5,48 +5,48 @@ export const FIRMWARE_PIPELINE: readonly FirmwareStage[] = [
   {
     index: 1,
     label: 'I²C read @ 500 Hz',
-    detail: 'Read the MPU-9250 over I²C at 500 Hz — accelerometer, gyroscope and magnetometer.',
+    detail: 'Accel, gyro and magnetometer, straight off the IMU.',
   },
   {
     index: 2,
     label: 'Madgwick / Mahony fusion',
     detail:
-      'Sensor fusion produces a stable quaternion orientation. Gyro drift is corrected by the accelerometer and magnetometer.',
+      'Fuses to a stable quaternion. Gyro drift corrected by accel and mag.',
   },
   {
     index: 3,
     label: 'Quaternion delta → cursor delta',
-    detail: 'The change in orientation becomes yaw/pitch deltas, then 2D cursor deltas.',
+    detail: 'Orientation change becomes yaw/pitch, then cursor movement.',
   },
   {
     index: 4,
     label: '1 Euro filter',
     detail:
-      'An adaptive low-pass that suppresses hand tremor at low speeds while staying responsive at high speeds. Tremor in, steady crosshair out.',
+      'Adaptive low-pass. Kills tremor when slow, stays sharp when fast.',
   },
   {
     index: 5,
     label: 'Clutch gate',
     detail:
-      'Hold the clutch to suspend tracking and reposition your arm without moving the cursor — exactly like lifting a mouse off the mat.',
+      'Hold to freeze tracking and reposition your arm. Like lifting a mouse.',
   },
   {
     index: 6,
     label: 'Sensitivity scalar',
-    detail: 'The potentiometer ADC becomes a live sensitivity scalar, applied before output.',
+    detail: 'The dial sets sensitivity live, before output.',
   },
   {
     index: 7,
     label: 'USB HID report',
     detail:
-      'Emit standard USB HID mouse reports. The OS sees a mouse, so it works in every game with zero drivers and zero configuration.',
+      'Standard HID. Every game, zero drivers, zero config.',
   },
 ]
 
 /** §7 — the design decision worth showing. */
 export const WHY_NOT_WIFI = {
-  heading: 'Why not offload to a networked Pi?',
-  body: 'We evaluated running the fusion and filtering on a Raspberry Pi over Wi-Fi and rejected it. The added latency defeats the purpose of the device: a pointing aid that lags is worse than no pointing aid. Everything runs on the Pico itself, wired, because the one thing this project cannot spend is milliseconds.',
+  heading: 'Why not Wi-Fi?',
+  body: 'We tried offloading to a networked Pi and rejected it. A pointing aid that lags is worse than none. Everything runs on the Pico, wired — milliseconds are the one thing this project cannot spend.',
 } as const
 
 /** The real 1 Euro filter, quoted on the site because it is our actual

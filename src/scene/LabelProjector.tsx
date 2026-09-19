@@ -10,7 +10,7 @@ import { labelStore, type ProjectedLabel } from './labelStore'
 import type { PartId } from '@/content/types'
 import { useSafeFrame } from '@/scene/useSafeFrame'
 
-const SCENE_SCALE = 0.78
+const SCENE_SCALE = 0.82
 const world = new Vector3()
 
 /** Parts that get a label in the exploded view — every modelled part. */

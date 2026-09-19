@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { GAME_SECTION } from '@/content/site'
 import { SectionHeading } from '../SectionHeading'
+import { Bullets } from '../Bullets'
 import { Hud } from '@/game/Hud'
 import type { AimTrainer } from '@/game/useAimTrainer'
 
@@ -95,18 +96,15 @@ export function GameSectionView({ trainer }: { trainer: AimTrainer }) {
     <section
       ref={surfaceRef}
       id="game"
-      className="relative px-5 py-20 sm:px-8 lg:py-28"
+      className="relative h-full px-5 py-20 sm:px-8 lg:py-28"
     >
-      <div className="max-w-[620px] lg:pl-12">
+      <div className="sticky top-[54vh] max-w-[620px] lg:top-[16vh] lg:pl-12">
         <SectionHeading numeral={GAME_SECTION.numeral} title={GAME_SECTION.title} tone="noir" />
 
         <div className="grid gap-8">
           <div className="space-y-5">
-            {GAME_SECTION.body.map((p) => (
-              <p key={p.slice(0, 32)} className="text-grey-1">
-                {p}
-              </p>
-            ))}
+            <p className="text-lg text-paper">{GAME_SECTION.lead}</p>
+            <Bullets points={GAME_SECTION.points} tone="noir" />
 
             <div className="pt-4">
               <Hud trainer={trainer} />

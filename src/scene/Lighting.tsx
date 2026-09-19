@@ -1,68 +1,97 @@
 import { Environment, ContactShadows, Lightformer } from '@react-three/drei'
 
 /**
- * §6 — one key directional, one amber rim, a low-intensity environment, and a
- * contact shadow under the gun.
+ * Product-shot lighting.
  *
- * The environment is built from lightformers rather than an HDR preset on
- * purpose: drei's presets fetch a multi-megabyte .hdr from a CDN, which both
- * blows the §11 LCP budget and suspends the whole scene behind a network round
- * trip. These are generated on the GPU, cost nothing to load, and let the amber
- * rim actually show up in the clearcoat on the white shell.
+ * What makes a white object read as a solid form rather than a flat cut-out is
+ * that its faces differ from each other: a bright key on one side, a cool fill
+ * on the other, and a hard rim separating the silhouette from the background.
+ * A single key plus ambient — which is what this was — gives you none of that,
+ * and the shell came out looking like untextured polystyrene.
+ *
+ * The environment is built from lightformers rather than an HDR preset because
+ * drei's presets fetch multiple megabytes from a CDN and suspend the whole
+ * scene behind that request.
  */
 export function Lighting({ shadows = true }: { shadows?: boolean }) {
   return (
     <>
-      <ambientLight intensity={0.4} />
-      <directionalLight
-        position={[4, 6, 5]}
-        intensity={2.2}
-        castShadow={shadows}
-        shadow-mapSize={[1024, 1024]}
-        shadow-bias={-0.0002}
-      />
-      {/* amber rim from behind and low — the signature light */}
-      <directionalLight position={[-5, 1.5, -4]} intensity={2.4} color="#f5a623" />
+      {/* low ambient — the environment does the soft lifting, not this */}
+      <ambientLight intensity={0.22} />
 
-      <Environment resolution={128}>
-        {/* soft white key overhead */}
+      {/* key, high and front-right */}
+      <directionalLight
+        position={[4.5, 6, 4]}
+        intensity={2.4}
+        castShadow={shadows}
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-0.0004}
+        shadow-normalBias={0.02}
+      />
+
+      {/* amber rim, behind and low — separates the silhouette from the ground */}
+      <directionalLight position={[-5, 1.2, -4.5]} intensity={3.2} color="#f5a623" />
+
+      {/* cool fill opposite the key, so the shadow side has shape in it */}
+      <directionalLight position={[-3.5, 1.5, 3]} intensity={0.75} color="#aab4d0" />
+
+      {/* narrow top kicker — catches the rail teeth and the slide edge */}
+      <spotLight
+        position={[0, 5.5, 1.5]}
+        angle={0.7}
+        penumbra={0.8}
+        intensity={22}
+        distance={14}
+        color="#ffffff"
+      />
+
+      <Environment resolution={256}>
+        {/* broad soft box overhead */}
         <Lightformer
           form="rect"
-          intensity={1.6}
-          position={[0, 4, 2]}
-          scale={[8, 4, 1]}
+          intensity={2.0}
+          position={[0, 4.5, 2]}
+          scale={[10, 5, 1]}
           rotation={[-Math.PI / 2, 0, 0]}
           color="#ffffff"
         />
-        {/* amber wrap on the left */}
+        {/* amber wrap, camera left */}
         <Lightformer
           form="rect"
-          intensity={2.2}
-          position={[-4, 1, -2]}
-          scale={[4, 6, 1]}
+          intensity={2.6}
+          position={[-4.5, 1, -2]}
+          scale={[5, 7, 1]}
           rotation={[0, Math.PI / 2, 0]}
           color="#f5a623"
         />
-        {/* cool fill on the right so the white shell does not go flat */}
+        {/* cool bounce, camera right */}
         <Lightformer
           form="rect"
-          intensity={0.9}
-          position={[4, 0.5, -1]}
-          scale={[4, 5, 1]}
+          intensity={1.1}
+          position={[4.5, 0.5, -1]}
+          scale={[5, 6, 1]}
           rotation={[0, -Math.PI / 2, 0]}
-          color="#c9c9d1"
+          color="#c9d2e8"
+        />
+        {/* thin strip low and front — the specular line along the barrel */}
+        <Lightformer
+          form="rect"
+          intensity={1.8}
+          position={[0, -1.5, 3.5]}
+          scale={[7, 0.6, 1]}
+          color="#ffffff"
         />
       </Environment>
 
       {shadows && (
         <ContactShadows
-          position={[0, -1.15, 0]}
-          opacity={0.45}
-          scale={12}
-          blur={2.4}
-          far={4}
-          resolution={512}
-          color="#101013"
+          position={[0, -1.25, 0]}
+          opacity={0.55}
+          scale={13}
+          blur={2.2}
+          far={4.5}
+          resolution={1024}
+          color="#000000"
         />
       )}
     </>
