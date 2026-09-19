@@ -22,15 +22,17 @@ export function Lighting({ shadows = true }: { shadows?: boolean }) {
       {/* key, high and front-right */}
       <directionalLight
         position={[4.5, 6, 4]}
-        intensity={2.4}
+        intensity={3.0}
         castShadow={shadows}
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
       />
 
-      {/* amber rim, behind and low — separates the silhouette from the ground */}
-      <directionalLight position={[-5, 1.2, -4.5]} intensity={3.2} color="#f5a623" />
+      {/* Amber rim, behind and low — separates the silhouette from the ground.
+          Kept deliberately low: at high intensity it stops being a rim and
+          becomes a wash, and a white ABS shell comes out tan. */}
+      <directionalLight position={[-5, 1.2, -4.5]} intensity={1.5} color="#f5a623" />
 
       {/* cool fill opposite the key, so the shadow side has shape in it */}
       <directionalLight position={[-3.5, 1.5, 3]} intensity={0.75} color="#aab4d0" />
@@ -58,7 +60,7 @@ export function Lighting({ shadows = true }: { shadows?: boolean }) {
         {/* amber wrap, camera left */}
         <Lightformer
           form="rect"
-          intensity={2.6}
+          intensity={1.4}
           position={[-4.5, 1, -2]}
           scale={[5, 7, 1]}
           rotation={[0, Math.PI / 2, 0]}

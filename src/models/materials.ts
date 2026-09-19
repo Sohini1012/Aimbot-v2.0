@@ -98,6 +98,14 @@ export const blackPlasticMaterial = new MeshStandardMaterial({
   metalness: 0.0,
 })
 
+/** The Pico's GP25 LED — the only colour on an otherwise bare green board. */
+export const ledMaterial = new MeshStandardMaterial({
+  color: new Color('#6ef08a'),
+  emissive: new Color('#3cff72'),
+  emissiveIntensity: 1.6,
+  roughness: 0.3,
+})
+
 /** Highlight material used during the component walk (§8 beat 4). */
 export const highlightMaterial = new MeshStandardMaterial({
   color: new Color(TOKEN.amber),
@@ -118,6 +126,7 @@ export function disposeMaterials(): void {
     perfboardMaterial,
     metalMaterial,
     blackPlasticMaterial,
+    ledMaterial,
     highlightMaterial,
   ]) {
     m.dispose()

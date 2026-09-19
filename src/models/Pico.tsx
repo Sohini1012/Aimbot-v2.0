@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { DIM, mm } from './scale'
-import { pcbMaterial, metalMaterial, blackPlasticMaterial } from './materials'
+import { pcbMaterial, metalMaterial, blackPlasticMaterial, ledMaterial } from './materials'
 import { Instanced, type InstanceSpec } from './Instanced'
 
 /**
@@ -37,6 +37,15 @@ export function Pico() {
       {/* micro-USB, overhanging the top edge */}
       <mesh position={[l / 2 + mm(1.5), t * 0.6, 0]} material={metalMaterial} castShadow>
         <boxGeometry args={[mm(6), mm(2.6), mm(7.5)]} />
+      </mesh>
+
+      {/* green LED on GP25, and the 5V-to-3.3V converter — both called out in
+          the board references, and the LED is the one spot of colour on it */}
+      <mesh position={[l / 2 - mm(16), t, w / 2 - mm(4)]} material={ledMaterial}>
+        <boxGeometry args={[mm(1.6), mm(0.8), mm(1.2)]} />
+      </mesh>
+      <mesh position={[-mm(12), t, mm(4)]} material={blackPlasticMaterial}>
+        <boxGeometry args={[mm(3), mm(1), mm(2.6)]} />
       </mesh>
 
       {/* BOOTSEL */}

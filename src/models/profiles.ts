@@ -79,16 +79,24 @@ export const SLIDE_OUTLINE: readonly Pt[] = [
   { x: -0.62, y: 0.36 },
 ]
 
-/** Short stock — barely a stock at all, which is accurate. */
+/**
+ * Short stock — barely a stock at all, which is accurate.
+ *
+ * Traced as one solid wedge with a single notch rather than a skeletal frame.
+ * The skeletal version had a cut-out that, at hero framing, separated into
+ * what looked like three unrelated white boxes floating behind the grip: a
+ * shape that is legible on a reference photo is not automatically legible at
+ * 200 pixels wide.
+ */
 export const STOCK_OUTLINE: readonly Pt[] = [
-  { x: -0.95, y: 0.14 },
-  { x: -1.5, y: 0.16 },
-  { x: -1.56, y: -0.04 },
-  { x: -1.36, y: -0.06 },
-  { x: -1.34, y: -0.38 },
-  { x: -1.54, y: -0.4 },
-  { x: -1.5, y: -0.6 },
-  { x: -0.95, y: -0.58 },
+  { x: -0.95, y: 0.16 },
+  { x: -1.46, y: 0.12 },
+  { x: -1.54, y: 0.0 },
+  { x: -1.52, y: -0.3 },
+  { x: -1.4, y: -0.42 },
+  { x: -1.18, y: -0.4 },
+  { x: -1.14, y: -0.2 },
+  { x: -0.95, y: -0.18 },
 ]
 
 export const EXTRUDE_DEPTH = 0.5
